@@ -1,0 +1,14 @@
+[errors]
+no_party = "You don't have a party!"
+has_party = "You are already in a party!"
+cannot_self_invite = "You cannot invite yourself!"
+already_invited = "There's still a pending invite!"
+invalid_invite = "Invite expired."
+
+[info]
+party_created = "You made a party!"
+invited_by = "%s invited you to join the party!"
+player_joined = "%s joined the party!"
+party_joined = "You joined the party!"
+party_disbanded_by = "The party has been disbanded!"
+party_disbanded = "You disbanded the party!"
