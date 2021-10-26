@@ -1,19 +1,18 @@
 package com.github.nearata.parties;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Team;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
-import com.github.nearata.parties.listener.PartiesListener;
 import com.github.nearata.parties.manager.PartiesManager;
 import com.github.nearata.parties.object.PartyInvite;
 import com.github.nearata.parties.runnable.PartyInviteRunnable;
@@ -28,7 +27,6 @@ import net.md_5.bungee.api.ChatColor;
 public final class Parties extends JavaPlugin
 {
     private static Parties instance;
-    private FileConfig partiesConfig;
     private FileConfig messagesConfig;
     private PartiesManager partiesManager;
 
@@ -36,16 +34,8 @@ public final class Parties extends JavaPlugin
     public void onEnable()
     {
         instance = this;
-        
-        this.saveResource("parties.json", false);
+
         this.saveResource("messages.toml", false);
-
-        this.partiesConfig = FileConfig.builder(new File(this.getDataFolder(), "parties.json"))
-                .autoreload()
-                .autosave()
-                .build();
-        this.partiesConfig.load();
-
         this.messagesConfig = FileConfig.builder(new File(this.getDataFolder(), "messages.toml"))
                 .autoreload()
                 .autosave()
@@ -53,8 +43,6 @@ public final class Parties extends JavaPlugin
         this.messagesConfig.load();
 
         this.partiesManager = new PartiesManager();
-
-        this.getServer().getPluginManager().registerEvents(new PartiesListener(), this);
 
         new PartyInviteRunnable().runTaskTimer(this, 0, 20);
 
@@ -70,15 +58,12 @@ public final class Parties extends JavaPlugin
                         CommandAPI.fail(this.messagesConfig.get("errors.has_party"));
                     }
 
-                    final String partyid = StringUtils.left(UUID.randomUUID().toString().replace("-", ""), 16);
-                    player.getPersistentDataContainer().set(key, PersistentDataType.STRING, StringUtils.left(partyid, 16));
+                    final String partyid = StringUtils.left(uuid.toString().replace("-", ""), 16);
+                    player.getPersistentDataContainer().set(key, PersistentDataType.STRING, partyid);
 
-                    final String path = "parties." + partyid;
-                    this.partiesConfig.set(path + ".leader", uuid.toString());
-                    this.partiesConfig.set(path + ".players", List.of(uuid.toString()));
-
-                    final Team team = player.getScoreboard().registerNewTeam(partyid);
+                    final Team team = this.getServer().getScoreboardManager().getMainScoreboard().registerNewTeam(partyid);
                     team.addEntry(player.getName());
+                    team.setAllowFriendlyFire(false);
 
                     player.sendMessage(ChatColor.GREEN + (String) this.messagesConfig.get("info.party_created"));
                 })
@@ -91,19 +76,21 @@ public final class Parties extends JavaPlugin
                     final UUID uuid = player.getUniqueId();
                     final NamespacedKey key = new NamespacedKey(this, "party");
 
-                    if (!player.getPersistentDataContainer().has(key, PersistentDataType.STRING))
+                    final PersistentDataContainer data = player.getPersistentDataContainer();
+
+                    if (!data.has(key, PersistentDataType.STRING))
                     {
                         CommandAPI.fail(this.messagesConfig.get("errors.no_party"));
                     }
 
-                    final String partyid = player.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+                    final String partyid = data.get(key, PersistentDataType.STRING);
 
-                    player.getPersistentDataContainer().remove(key);
-                    player.getScoreboard().getTeam(partyid).unregister();
+                    data.remove(key);
+                    final Team team = this.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
 
-                    for (String ppuuid : this.partiesManager.getPartyPlayers(partyid))
+                    for (String username : team.getEntries())
                     {
-                        final Player partyplayer = this.getServer().getPlayer(UUID.fromString(ppuuid));
+                        final Player partyplayer = this.getServer().getPlayer(username);
 
                         if (partyplayer == null)
                         {
@@ -115,13 +102,11 @@ public final class Parties extends JavaPlugin
                             continue;
                         }
 
-                        partyplayer.getScoreboard().getTeam(partyid).unregister();
                         partyplayer.getPersistentDataContainer().remove(key);
                         partyplayer.sendMessage(ChatColor.RED + (String) this.messagesConfig.get("info.party_disbanded_by"));
                     }
 
-                    this.partiesConfig.remove("parties." + partyid);
-
+                    team.unregister();
                     player.sendMessage(ChatColor.RED + (String) this.messagesConfig.get("info.party_disbanded"));
                 })
                 .register();
@@ -137,7 +122,10 @@ public final class Parties extends JavaPlugin
                         CommandAPI.fail(this.messagesConfig.get("errors.no_party"));
                     }
 
-                    final Team team = player.getScoreboard().getTeam(player.getPersistentDataContainer().get(key, PersistentDataType.STRING));
+                    final Team team = this.getServer()
+                            .getScoreboardManager()
+                            .getMainScoreboard()
+                            .getTeam(player.getPersistentDataContainer().get(key, PersistentDataType.STRING));
 
                     player.sendMessage("Party Members: " + String.join(", ", team.getEntries()));
                 })
@@ -157,6 +145,12 @@ public final class Parties extends JavaPlugin
                     }
 
                     final Player player1 = (Player) args[0];
+
+                    if (player1.getPersistentDataContainer().has(key, PersistentDataType.STRING))
+                    {
+                        CommandAPI.fail(this.messagesConfig.get("errors.invited_player_has_party"));
+                    }
+
                     final UUID uuid1 = player1.getUniqueId();
 
                     if (uuid.equals(uuid1))
@@ -172,6 +166,8 @@ public final class Parties extends JavaPlugin
                     }
 
                     this.partiesManager.getInvites().put(partyid, new PartyInvite(player.getName(), uuid1));
+
+                    player.sendMessage(((String) this.messagesConfig.get("info.invited")).formatted(player1.getName()));
                     player1.sendMessage(((String) this.messagesConfig.get("info.invited_by")).formatted(player.getName()));
                 })
                 .register();
@@ -196,25 +192,27 @@ public final class Parties extends JavaPlugin
                     }
 
                     final String issuer = (String) args[0];
-                    String partyid = null;
 
-                    for (Entry<String, PartyInvite> i : this.partiesManager.getInvites().entries())
+                    final Optional<String> partyid = this.partiesManager.getInvites()
+                            .entries()
+                            .stream()
+                            .filter(e -> {
+                                return e.getValue().getIssuer().equals(issuer)
+                                        && e.getValue().getUUID().equals(player.getUniqueId());
+                            })
+                            .map(e -> e.getKey())
+                            .findAny();
+
+                    if (partyid.isEmpty())
                     {
-                        if (i.getValue().getIssuer().equals(issuer) && i.getValue().getUUID().equals(player.getUniqueId()))
-                        {
-                            partyid = i.getKey();
-                            break;
-                        }
+                        CommandAPI.fail(this.messagesConfig.get("errors.expired_invite"));
                     }
 
-                    if (partyid == null)
-                    {
-                        CommandAPI.fail(this.messagesConfig.get("errors.invalid_invite"));
-                    }
+                    final Team team = this.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid.get());
 
-                    for (String ppid : this.partiesManager.getPartyPlayers(partyid))
+                    for (String username : team.getEntries())
                     {
-                        final Player partyplayer = this.getServer().getPlayer(ppid);
+                        final Player partyplayer = this.getServer().getPlayer(username);
 
                         if (partyplayer == null)
                         {
@@ -224,10 +222,33 @@ public final class Parties extends JavaPlugin
                         partyplayer.sendMessage(ChatColor.GREEN + ((String) this.messagesConfig.get("info.player_joined")).formatted(player.getName()));
                     }
 
-                    player.getScoreboard().getTeam(partyid).addEntry(player.getName());
+                    team.addEntry(player.getName());
+                    player.getPersistentDataContainer().set(key, PersistentDataType.STRING, partyid.get());
                     this.partiesManager.getInvites().values().removeIf(i -> i.getIssuer().equals(issuer) && i.getUUID().equals(player.getUniqueId()));
 
                     player.sendMessage(ChatColor.GREEN + (String) this.messagesConfig.get("info.party_joined"));
+                })
+                .register();
+
+        new CommandAPICommand("party")
+                .withPermission("parties.command.leave")
+                .withArguments(new LiteralArgument("leave"))
+                .executesPlayer((player, args) -> {
+                    final NamespacedKey partykey = new NamespacedKey(this, "party");
+
+                    final PersistentDataContainer data = player.getPersistentDataContainer();
+
+                    if (!data.has(partykey, PersistentDataType.STRING))
+                    {
+                        CommandAPI.fail(this.messagesConfig.get("errors.no_party"));
+                    }
+
+                    final String partyid = data.get(partykey, PersistentDataType.STRING);
+                    final Team team = this.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
+
+                    data.remove(partykey);
+                    team.removeEntry(player.getName());
+                    player.sendMessage((String) this.messagesConfig.get("info.party_left"));
                 })
                 .register();
     }
@@ -240,11 +261,6 @@ public final class Parties extends JavaPlugin
     public static Parties getInstance()
     {
         return instance;
-    }
-
-    public FileConfig getPartiesConfig()
-    {
-        return this.partiesConfig;
     }
 
     public FileConfig getMessagesConfig()
