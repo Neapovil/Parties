@@ -68,7 +68,7 @@ public final class Parties extends JavaPlugin
 
     public NamespacedKey getKey()
     {
-        return new NamespacedKey(instance, "party");
+        return new NamespacedKey(this, "party");
     }
 
     public PersistentDataType<String, String> getKeyType()
