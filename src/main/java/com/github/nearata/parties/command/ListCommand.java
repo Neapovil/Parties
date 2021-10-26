@@ -1,5 +1,8 @@
 package com.github.nearata.parties.command;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
@@ -28,7 +31,20 @@ public final class ListCommand
                             .getMainScoreboard()
                             .getTeam(player.getPersistentDataContainer().get(plugin.getKey(), plugin.getKeyType()));
 
-                    player.sendMessage("Party Members: " + String.join(", ", team.getEntries()));
+                    final List<String> members = team.getEntries()
+                            .stream()
+                            .filter(e -> !e.startsWith("leader-"))
+                            .collect(Collectors.toList());
+
+                    final String leader = team.getEntries()
+                            .stream()
+                            .filter(e -> e.startsWith("leader-"))
+                            .findAny()
+                            .get()
+                            .replace("leader-", "");
+
+                    player.sendMessage("Party Leader: " + leader);
+                    player.sendMessage("Party Members: " + String.join(", ", members));
                 })
                 .register();
     }

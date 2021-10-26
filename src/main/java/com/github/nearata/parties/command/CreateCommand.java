@@ -33,6 +33,7 @@ public final class CreateCommand
 
                     final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().registerNewTeam(partyid);
                     team.addEntry(player.getName());
+                    team.addEntry("leader-" + player.getName());
                     team.setAllowFriendlyFire(false);
 
                     player.sendMessage(ChatColor.GREEN + (String) plugin.getMessagesConfig().get("info.party_created"));
