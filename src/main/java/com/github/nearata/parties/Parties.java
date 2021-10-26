@@ -13,6 +13,7 @@ import com.github.nearata.parties.command.DisbandCommand;
 import com.github.nearata.parties.command.InviteCommand;
 import com.github.nearata.parties.command.LeaveCommand;
 import com.github.nearata.parties.command.ListCommand;
+import com.github.nearata.parties.listener.Listener;
 import com.github.nearata.parties.manager.PartiesManager;
 import com.github.nearata.parties.runnable.PartyInviteRunnable;
 
@@ -35,6 +36,8 @@ public final class Parties extends JavaPlugin
         this.messagesConfig.load();
 
         this.partiesManager = new PartiesManager();
+
+        this.getServer().getPluginManager().registerEvents(new Listener(), this);
 
         new PartyInviteRunnable().runTaskTimer(this, 0, 20);
 
