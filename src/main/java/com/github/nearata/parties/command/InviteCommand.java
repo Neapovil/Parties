@@ -2,9 +2,7 @@ package com.github.nearata.parties.command;
 
 import java.util.UUID;
 
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataType;
 
 import com.github.nearata.parties.Parties;
 import com.github.nearata.parties.object.PartyInvite;
@@ -26,16 +24,14 @@ public final class InviteCommand
                 .withArguments(new PlayerArgument("player"))
                 .executesPlayer((player, args) -> {
                     final UUID uuid = player.getUniqueId();
-                    final NamespacedKey key = new NamespacedKey(plugin, "party");
-
-                    if (!player.getPersistentDataContainer().has(key, PersistentDataType.STRING))
+                    if (!player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
                         CommandAPI.fail(plugin.getMessagesConfig().get("errors.no_party"));
                     }
 
                     final Player player1 = (Player) args[0];
 
-                    if (player1.getPersistentDataContainer().has(key, PersistentDataType.STRING))
+                    if (player1.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
                         CommandAPI.fail(plugin.getMessagesConfig().get("errors.invited_player_has_party"));
                     }
@@ -47,7 +43,7 @@ public final class InviteCommand
                         CommandAPI.fail(plugin.getMessagesConfig().get("errors.cannot_self_invite"));
                     }
 
-                    final String partyid = player.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+                    final String partyid = player.getPersistentDataContainer().get(plugin.getKey(), plugin.getKeyType());
 
                     if (plugin.getPartiesManager().getInvites().get(partyid).stream().anyMatch(i -> i.getUUID().equals(uuid1)))
                     {

@@ -1,7 +1,5 @@
 package com.github.nearata.parties.command;
 
-import org.bukkit.NamespacedKey;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
@@ -20,9 +18,7 @@ public final class ListCommand
                 .withPermission("parties.command.list")
                 .withArguments(new LiteralArgument("list"))
                 .executesPlayer((player, args) -> {
-                    final NamespacedKey key = new NamespacedKey(plugin, "party");
-
-                    if (!player.getPersistentDataContainer().has(key, PersistentDataType.STRING))
+                    if (!player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
                         CommandAPI.fail(plugin.getMessagesConfig().get("errors.no_party"));
                     }
@@ -30,7 +26,7 @@ public final class ListCommand
                     final Team team = plugin.getServer()
                             .getScoreboardManager()
                             .getMainScoreboard()
-                            .getTeam(player.getPersistentDataContainer().get(key, PersistentDataType.STRING));
+                            .getTeam(player.getPersistentDataContainer().get(plugin.getKey(), plugin.getKeyType()));
 
                     player.sendMessage("Party Members: " + String.join(", ", team.getEntries()));
                 })

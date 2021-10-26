@@ -2,6 +2,8 @@ package com.github.nearata.parties;
 
 import java.io.File;
 
+import org.bukkit.NamespacedKey;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
@@ -62,5 +64,15 @@ public final class Parties extends JavaPlugin
     public PartiesManager getPartiesManager()
     {
         return this.partiesManager;
+    }
+
+    public NamespacedKey getKey()
+    {
+        return new NamespacedKey(instance, "party");
+    }
+
+    public PersistentDataType<String, String> getKeyType()
+    {
+        return PersistentDataType.STRING;
     }
 }

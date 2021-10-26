@@ -2,9 +2,7 @@ package com.github.nearata.parties.command;
 
 import java.util.Optional;
 
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
@@ -34,9 +32,7 @@ public final class AcceptCommand
                             .toArray(String[]::new);
                 }))
                 .executesPlayer((player, args) -> {
-                    final NamespacedKey key = new NamespacedKey(plugin, "party");
-
-                    if (player.getPersistentDataContainer().has(key, PersistentDataType.STRING))
+                    if (player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
                         CommandAPI.fail(plugin.getMessagesConfig().get("errors.has_party"));
                     }
@@ -74,7 +70,7 @@ public final class AcceptCommand
                     }
 
                     team.addEntry(player.getName());
-                    player.getPersistentDataContainer().set(key, PersistentDataType.STRING, partyid.get());
+                    player.getPersistentDataContainer().set(plugin.getKey(), plugin.getKeyType(), partyid.get());
                     plugin.getPartiesManager()
                             .getInvites()
                             .values()

@@ -2,10 +2,8 @@ package com.github.nearata.parties.command;
 
 import java.util.UUID;
 
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
@@ -26,18 +24,16 @@ public final class DisbandCommand
                 .withArguments(new LiteralArgument("disband"))
                 .executesPlayer((player, args) -> {
                     final UUID uuid = player.getUniqueId();
-                    final NamespacedKey key = new NamespacedKey(plugin, "party");
-
                     final PersistentDataContainer data = player.getPersistentDataContainer();
 
-                    if (!data.has(key, PersistentDataType.STRING))
+                    if (!data.has(plugin.getKey(), plugin.getKeyType()))
                     {
                         CommandAPI.fail(plugin.getMessagesConfig().get("errors.no_party"));
                     }
 
-                    final String partyid = data.get(key, PersistentDataType.STRING);
+                    final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
 
-                    data.remove(key);
+                    data.remove(plugin.getKey());
                     final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
 
                     for (String username : team.getEntries())
@@ -54,7 +50,7 @@ public final class DisbandCommand
                             continue;
                         }
 
-                        partyplayer.getPersistentDataContainer().remove(key);
+                        partyplayer.getPersistentDataContainer().remove(plugin.getKey());
                         partyplayer.sendMessage(ChatColor.RED + (String) plugin.getMessagesConfig().get("info.party_disbanded_by"));
                     }
 
