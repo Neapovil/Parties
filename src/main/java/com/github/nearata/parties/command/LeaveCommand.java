@@ -1,12 +1,15 @@
 package com.github.nearata.parties.command;
 
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
+import com.github.nearata.parties.util.Util;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
+import net.md_5.bungee.api.ChatColor;
 
 public final class LeaveCommand
 {
@@ -28,7 +31,14 @@ public final class LeaveCommand
                     final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
 
                     data.remove(plugin.getKey());
-                    plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid).removeEntry(player.getName());
+                    
+                    final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
+                    team.removeEntry(player.getName());
+                    
+                    Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
+                        final String msg = (String) plugin.getMessages().get("info.player_left");
+                        p.sendMessage(ChatColor.RED + msg.formatted(player.getName()));
+                    });
 
                     player.sendMessage((String) plugin.getMessages().get("info.party_left"));
                 })
