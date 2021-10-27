@@ -28,7 +28,7 @@ public final class DisbandCommand
 
                     if (!data.has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessagesConfig().get("errors.no_party"));
+                        CommandAPI.fail(plugin.getMessages().get("errors.no_party"));
                     }
 
                     final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
@@ -38,11 +38,11 @@ public final class DisbandCommand
 
                     Util.getOnlineMembers(team.getEntries(), uuid).forEach(p -> {
                         p.getPersistentDataContainer().remove(plugin.getKey());
-                        p.sendMessage(ChatColor.RED + (String) plugin.getMessagesConfig().get("info.party_disbanded_by"));
+                        p.sendMessage(ChatColor.RED + (String) plugin.getMessages().get("info.party_disbanded_by"));
                     });
 
                     team.unregister();
-                    player.sendMessage(ChatColor.RED + (String) plugin.getMessagesConfig().get("info.party_disbanded"));
+                    player.sendMessage(ChatColor.RED + (String) plugin.getMessages().get("info.party_disbanded"));
                 })
                 .register();
     }

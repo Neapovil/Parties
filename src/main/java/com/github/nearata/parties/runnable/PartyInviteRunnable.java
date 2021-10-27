@@ -13,6 +13,6 @@ public final class PartyInviteRunnable extends BukkitRunnable
     @Override
     public void run()
     {
-        plugin.getPartiesManager().getInvites().values().removeIf(i -> Instant.now().isAfter(i.getTime()));
+        plugin.getManager().getInvites().values().removeIf(i -> Instant.now().isAfter(i.getTime()));
     }
 }

@@ -24,7 +24,7 @@ public final class AcceptCommand
                 .withPermission("parties.command.accept")
                 .withArguments(new LiteralArgument("accept"))
                 .withArguments(new StringArgument("player").replaceSuggestions(s -> {
-                    return plugin.getPartiesManager()
+                    return plugin.getManager()
                             .getInvites()
                             .values()
                             .stream()
@@ -35,12 +35,12 @@ public final class AcceptCommand
                 .executesPlayer((player, args) -> {
                     if (player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessagesConfig().get("errors.has_party"));
+                        CommandAPI.fail(plugin.getMessages().get("errors.has_party"));
                     }
 
                     final String issuer = (String) args[0];
 
-                    final Optional<String> partyid = plugin.getPartiesManager()
+                    final Optional<String> partyid = plugin.getManager()
                             .getInvites()
                             .entries()
                             .stream()
@@ -53,19 +53,19 @@ public final class AcceptCommand
 
                     if (partyid.isEmpty())
                     {
-                        CommandAPI.fail(plugin.getMessagesConfig().get("errors.expired_invite"));
+                        CommandAPI.fail(plugin.getMessages().get("errors.expired_invite"));
                     }
 
                     final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid.get());
 
                     Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
-                        final String msg = (String) plugin.getMessagesConfig().get("info.player_joined");
+                        final String msg = (String) plugin.getMessages().get("info.player_joined");
                         p.sendMessage(ChatColor.GREEN + msg.formatted(player.getName()));
                     });
 
                     team.addEntry(player.getName());
                     player.getPersistentDataContainer().set(plugin.getKey(), plugin.getKeyType(), partyid.get());
-                    plugin.getPartiesManager()
+                    plugin.getManager()
                             .getInvites()
                             .values()
                             .removeIf(i -> {
@@ -73,7 +73,7 @@ public final class AcceptCommand
                                         && i.getUUID().equals(player.getUniqueId());
                             });
 
-                    player.sendMessage(ChatColor.GREEN + (String) plugin.getMessagesConfig().get("info.party_joined"));
+                    player.sendMessage(ChatColor.GREEN + (String) plugin.getMessages().get("info.party_joined"));
                 })
                 .register();
     }

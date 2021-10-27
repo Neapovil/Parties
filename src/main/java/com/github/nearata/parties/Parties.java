@@ -14,14 +14,14 @@ import com.github.nearata.parties.command.InviteCommand;
 import com.github.nearata.parties.command.LeaveCommand;
 import com.github.nearata.parties.command.ListCommand;
 import com.github.nearata.parties.listener.Listener;
-import com.github.nearata.parties.manager.PartiesManager;
+import com.github.nearata.parties.manager.Manager;
 import com.github.nearata.parties.runnable.PartyInviteRunnable;
 
 public final class Parties extends JavaPlugin
 {
     private static Parties instance;
-    private FileConfig messagesConfig;
-    private PartiesManager partiesManager;
+    private FileConfig messages;
+    private Manager partiesManager;
 
     @Override
     public void onEnable()
@@ -29,13 +29,13 @@ public final class Parties extends JavaPlugin
         instance = this;
 
         this.saveResource("messages.toml", false);
-        this.messagesConfig = FileConfig.builder(new File(this.getDataFolder(), "messages.toml"))
+        this.messages = FileConfig.builder(new File(this.getDataFolder(), "messages.toml"))
                 .autoreload()
                 .autosave()
                 .build();
-        this.messagesConfig.load();
+        this.messages.load();
 
-        this.partiesManager = new PartiesManager();
+        this.partiesManager = new Manager();
 
         this.getServer().getPluginManager().registerEvents(new Listener(), this);
 
@@ -59,12 +59,12 @@ public final class Parties extends JavaPlugin
         return instance;
     }
 
-    public FileConfig getMessagesConfig()
+    public FileConfig getMessages()
     {
-        return this.messagesConfig;
+        return this.messages;
     }
 
-    public PartiesManager getPartiesManager()
+    public Manager getManager()
     {
         return this.partiesManager;
     }

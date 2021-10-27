@@ -26,7 +26,7 @@ public final class CreateCommand
 
                     if (player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessagesConfig().get("errors.has_party"));
+                        CommandAPI.fail(plugin.getMessages().get("errors.has_party"));
                     }
 
                     final String partyid = StringUtils.left(uuid.toString().replace("-", ""), 16);
@@ -37,7 +37,7 @@ public final class CreateCommand
                     team.addEntry("leader-" + player.getName());
                     team.setAllowFriendlyFire(false);
 
-                    player.sendMessage(ChatColor.GREEN + (String) plugin.getMessagesConfig().get("info.party_created"));
+                    player.sendMessage(ChatColor.GREEN + (String) plugin.getMessages().get("info.party_created"));
                 })
                 .register();
     }

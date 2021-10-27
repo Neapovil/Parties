@@ -4,7 +4,7 @@ import com.github.nearata.parties.object.PartyInvite;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-public final class PartiesManager
+public final class Manager
 {
     private final Multimap<String, PartyInvite> invites = ArrayListMultimap.create();
 

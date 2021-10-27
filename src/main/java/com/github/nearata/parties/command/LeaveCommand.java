@@ -22,7 +22,7 @@ public final class LeaveCommand
 
                     if (!data.has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessagesConfig().get("errors.no_party"));
+                        CommandAPI.fail(plugin.getMessages().get("errors.no_party"));
                     }
 
                     final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
@@ -30,7 +30,7 @@ public final class LeaveCommand
                     data.remove(plugin.getKey());
                     plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid).removeEntry(player.getName());
 
-                    player.sendMessage((String) plugin.getMessagesConfig().get("info.party_left"));
+                    player.sendMessage((String) plugin.getMessages().get("info.party_left"));
                 })
                 .register();
     }
