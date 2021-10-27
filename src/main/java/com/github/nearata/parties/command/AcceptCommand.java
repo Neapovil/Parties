@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
+import com.github.nearata.parties.util.Util;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -57,17 +58,10 @@ public final class AcceptCommand
 
                     final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid.get());
 
-                    for (String username : team.getEntries())
-                    {
-                        final Player partyplayer = plugin.getServer().getPlayer(username);
-
-                        if (partyplayer == null)
-                        {
-                            continue;
-                        }
-
-                        partyplayer.sendMessage(ChatColor.GREEN + ((String) plugin.getMessagesConfig().get("info.player_joined")).formatted(player.getName()));
-                    }
+                    Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
+                        final String msg = (String) plugin.getMessagesConfig().get("info.player_joined");
+                        p.sendMessage(ChatColor.GREEN + msg.formatted(player.getName()));
+                    });
 
                     team.addEntry(player.getName());
                     player.getPersistentDataContainer().set(plugin.getKey(), plugin.getKeyType(), partyid.get());

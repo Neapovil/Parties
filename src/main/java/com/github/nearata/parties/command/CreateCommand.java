@@ -23,6 +23,7 @@ public final class CreateCommand
                 .withArguments(new LiteralArgument("create"))
                 .executesPlayer((player, args) -> {
                     final UUID uuid = player.getUniqueId();
+
                     if (player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
                         CommandAPI.fail(plugin.getMessagesConfig().get("errors.has_party"));

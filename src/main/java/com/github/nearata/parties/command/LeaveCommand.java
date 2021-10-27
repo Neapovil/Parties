@@ -1,7 +1,6 @@
 package com.github.nearata.parties.command;
 
 import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
 
@@ -27,10 +26,9 @@ public final class LeaveCommand
                     }
 
                     final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
-                    final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
 
                     data.remove(plugin.getKey());
-                    team.removeEntry(player.getName());
+                    plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid).removeEntry(player.getName());
 
                     player.sendMessage((String) plugin.getMessagesConfig().get("info.party_left"));
                 })

@@ -1,7 +1,6 @@
 package com.github.nearata.parties.command;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bukkit.scoreboard.Team;
 
@@ -26,15 +25,16 @@ public final class ListCommand
                         CommandAPI.fail(plugin.getMessagesConfig().get("errors.no_party"));
                     }
 
+                    final String partyid = player.getPersistentDataContainer().get(plugin.getKey(), plugin.getKeyType());
                     final Team team = plugin.getServer()
                             .getScoreboardManager()
                             .getMainScoreboard()
-                            .getTeam(player.getPersistentDataContainer().get(plugin.getKey(), plugin.getKeyType()));
+                            .getTeam(partyid);
 
                     final List<String> members = team.getEntries()
                             .stream()
                             .filter(e -> !e.startsWith("leader-"))
-                            .collect(Collectors.toList());
+                            .toList();
 
                     final String leader = team.getEntries()
                             .stream()

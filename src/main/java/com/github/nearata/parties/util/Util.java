@@ -1,32 +1,26 @@
 package com.github.nearata.parties.util;
 
-import org.bukkit.entity.Entity;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.projectiles.ProjectileSource;
-import org.jetbrains.annotations.Nullable;
+
+import com.github.nearata.parties.Parties;
 
 public final class Util
 {
-    @Nullable
-    public static Player getPlayerFromEntity(Entity entity)
+    private static final Parties plugin = Parties.getInstance();
+
+    public static Set<Player> getOnlineMembers(Set<String> entries, UUID leaderId)
     {
-        if (entity instanceof Player)
-        {
-            return (Player) entity;
-        }
-
-        if (entity instanceof Projectile)
-        {
-            final Projectile projectile = (Projectile) entity;
-            final ProjectileSource shooter = projectile.getShooter();
-
-            if (shooter instanceof Player)
-            {
-                return (Player) shooter;
-            }
-        }
-
-        return null;
+        return entries.stream()
+                .map(username -> plugin.getServer().getPlayer(username))
+                .filter(player -> player != null)
+                .filter(player -> !player.getName().startsWith("leader-"))
+                .filter(player -> {
+                    return leaderId != null && !player.getUniqueId().equals(leaderId);
+                })
+                .collect(Collectors.toSet());
     }
 }
