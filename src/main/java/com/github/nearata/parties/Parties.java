@@ -21,7 +21,7 @@ public final class Parties extends JavaPlugin
 {
     private static Parties instance;
     private FileConfig messages;
-    private Manager partiesManager;
+    private Manager manager;
 
     @Override
     public void onEnable()
@@ -35,7 +35,7 @@ public final class Parties extends JavaPlugin
                 .build();
         this.messages.load();
 
-        this.partiesManager = new Manager();
+        this.manager = new Manager();
 
         this.getServer().getPluginManager().registerEvents(new Listener(), this);
 
@@ -66,7 +66,7 @@ public final class Parties extends JavaPlugin
 
     public Manager getManager()
     {
-        return this.partiesManager;
+        return this.manager;
     }
 
     public NamespacedKey getKey()
