@@ -3,6 +3,7 @@ package com.github.nearata.parties.command;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
 import com.github.nearata.parties.object.PartyInvite;
@@ -24,9 +25,18 @@ public final class InviteCommand
                 .withArguments(new PlayerArgument("player"))
                 .executesPlayer((player, args) -> {
                     final UUID uuid = player.getUniqueId();
+
                     if (!player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
                         CommandAPI.fail(plugin.getMessages().get("errors.no_party"));
+                    }
+
+                    final String partyid = player.getPersistentDataContainer().get(plugin.getKey(), plugin.getKeyType());
+                    final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
+
+                    if (!team.getEntries().contains("leader-" + player.getName()))
+                    {
+                        CommandAPI.fail((String) plugin.getMessages().get("errors.cannot_invite_no_permissions"));
                     }
 
                     final Player player1 = (Player) args[0];
@@ -42,8 +52,6 @@ public final class InviteCommand
                     {
                         CommandAPI.fail(plugin.getMessages().get("errors.cannot_self_invite"));
                     }
-
-                    final String partyid = player.getPersistentDataContainer().get(plugin.getKey(), plugin.getKeyType());
 
                     if (plugin.getManager().getInvites().get(partyid).stream().anyMatch(i -> i.getUUID().equals(uuid1)))
                     {
