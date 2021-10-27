@@ -32,9 +32,14 @@ public final class DisbandCommand
                     }
 
                     final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
+                    final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
+
+                    if (!team.getEntries().contains("leader-" + player.getName()))
+                    {
+                        CommandAPI.fail((String) plugin.getMessages().get("errors.cannot_disband_not_leader"));
+                    }
 
                     data.remove(plugin.getKey());
-                    final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
 
                     Util.getOnlineMembers(team.getEntries(), uuid).forEach(p -> {
                         p.getPersistentDataContainer().remove(plugin.getKey());
