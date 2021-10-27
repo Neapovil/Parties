@@ -23,7 +23,7 @@ public final class Util
                     {
                         return true;
                     }
-                    
+
                     return !player.getUniqueId().equals(leaderId);
                 })
                 .collect(Collectors.toSet());

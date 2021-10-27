@@ -29,12 +29,16 @@ public final class LeaveCommand
                     }
 
                     final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
+                    final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
+
+                    if (team.getEntries().contains("leader-" + player.getName()))
+                    {
+                        CommandAPI.fail((String) plugin.getMessages().get("errors.cannot_leave_leader"));
+                    }
 
                     data.remove(plugin.getKey());
-                    
-                    final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
                     team.removeEntry(player.getName());
-                    
+
                     Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
                         final String msg = (String) plugin.getMessages().get("info.player_left");
                         p.sendMessage(ChatColor.RED + msg.formatted(player.getName()));

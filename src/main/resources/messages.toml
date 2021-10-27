@@ -6,6 +6,7 @@ already_invited = "There's still a pending invite!"
 expired_invite = "The invite is expired."
 invited_player_has_party = "The invited player is already in a party!"
 cannot_disband_not_leader = "You MUST be the leader to disband!"
+cannot_leave_leader = "You are the leader!"
 
 [info]
 party_created = "You made a party!"
