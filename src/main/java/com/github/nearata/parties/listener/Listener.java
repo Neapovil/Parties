@@ -26,7 +26,7 @@ public final class Listener implements org.bukkit.event.Listener
         final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
         final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
 
-        if (team == null)
+        if (team == null || !team.getEntries().contains(player.getName()))
         {
             data.remove(plugin.getKey());
         }
