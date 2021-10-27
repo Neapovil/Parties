@@ -19,7 +19,12 @@ public final class Util
                 .filter(player -> player != null)
                 .filter(player -> !player.getName().startsWith("leader-"))
                 .filter(player -> {
-                    return leaderId != null && !player.getUniqueId().equals(leaderId);
+                    if (leaderId == null)
+                    {
+                        return true;
+                    }
+                    
+                    return !player.getUniqueId().equals(leaderId);
                 })
                 .collect(Collectors.toSet());
     }
