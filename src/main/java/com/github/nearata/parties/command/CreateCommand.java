@@ -6,6 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
+import com.github.nearata.parties.message.MessageError;
+import com.github.nearata.parties.message.MessageInfo;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -26,7 +28,7 @@ public final class CreateCommand
 
                     if (player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessages().get("errors.has_party"));
+                        CommandAPI.fail(plugin.getMessages().get(MessageError.HAS_PARTY.get()));
                     }
 
                     final String partyid = StringUtils.left(uuid.toString().replace("-", ""), 16);
@@ -37,7 +39,7 @@ public final class CreateCommand
                     team.addEntry("leader-" + player.getName());
                     team.setAllowFriendlyFire(false);
 
-                    player.sendMessage(ChatColor.GREEN + (String) plugin.getMessages().get("info.party_created"));
+                    player.sendMessage(ChatColor.GREEN + (String) plugin.getMessages().get(MessageInfo.PARTY_CREATED.get()));
                 })
                 .register();
     }

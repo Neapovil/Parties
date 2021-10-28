@@ -4,6 +4,8 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
+import com.github.nearata.parties.message.MessageError;
+import com.github.nearata.parties.message.MessageInfo;
 import com.github.nearata.parties.util.Util;
 
 import dev.jorel.commandapi.CommandAPI;
@@ -25,7 +27,7 @@ public final class LeaveCommand
 
                     if (!data.has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessages().get("errors.no_party"));
+                        CommandAPI.fail(plugin.getMessages().get(MessageError.NO_PARTY.get()));
                     }
 
                     final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
@@ -33,18 +35,18 @@ public final class LeaveCommand
 
                     if (team.getEntries().contains("leader-" + player.getName()))
                     {
-                        CommandAPI.fail((String) plugin.getMessages().get("errors.cannot_leave_leader"));
+                        CommandAPI.fail((String) plugin.getMessages().get(MessageError.CANNOT_LEAVE_LEADER.get()));
                     }
 
                     data.remove(plugin.getKey());
                     team.removeEntry(player.getName());
 
                     Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
-                        final String msg = (String) plugin.getMessages().get("info.player_left");
+                        final String msg = (String) plugin.getMessages().get(MessageInfo.PLAYER_LEFT.get());
                         p.sendMessage(ChatColor.RED + msg.formatted(player.getName()));
                     });
 
-                    player.sendMessage((String) plugin.getMessages().get("info.party_left"));
+                    player.sendMessage((String) plugin.getMessages().get(MessageInfo.PARTY_LEFT.get()));
                 })
                 .register();
     }

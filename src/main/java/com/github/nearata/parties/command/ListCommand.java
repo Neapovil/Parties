@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
+import com.github.nearata.parties.message.MessageError;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -22,7 +23,7 @@ public final class ListCommand
                 .executesPlayer((player, args) -> {
                     if (!player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessages().get("errors.no_party"));
+                        CommandAPI.fail(plugin.getMessages().get(MessageError.NO_PARTY.get()));
                     }
 
                     final String partyid = player.getPersistentDataContainer().get(plugin.getKey(), plugin.getKeyType());

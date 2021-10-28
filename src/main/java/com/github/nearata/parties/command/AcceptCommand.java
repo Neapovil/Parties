@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
+import com.github.nearata.parties.message.MessageError;
+import com.github.nearata.parties.message.MessageInfo;
 import com.github.nearata.parties.util.Util;
 
 import dev.jorel.commandapi.CommandAPI;
@@ -35,7 +37,7 @@ public final class AcceptCommand
                 .executesPlayer((player, args) -> {
                     if (player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessages().get("errors.has_party"));
+                        CommandAPI.fail(plugin.getMessages().get(MessageError.HAS_PARTY.get()));
                     }
 
                     final String issuer = (String) args[0];
@@ -53,13 +55,13 @@ public final class AcceptCommand
 
                     if (partyid.isEmpty())
                     {
-                        CommandAPI.fail(plugin.getMessages().get("errors.expired_invite"));
+                        CommandAPI.fail(MessageError.EXPIRED_INVITE.get());
                     }
 
                     final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid.get());
 
                     Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
-                        final String msg = (String) plugin.getMessages().get("info.player_joined");
+                        final String msg = (String) plugin.getMessages().get(MessageInfo.PLAYER_JOINED.get());
                         p.sendMessage(ChatColor.GREEN + msg.formatted(player.getName()));
                     });
 
@@ -73,7 +75,7 @@ public final class AcceptCommand
                                         && i.getUUID().equals(player.getUniqueId());
                             });
 
-                    player.sendMessage(ChatColor.GREEN + (String) plugin.getMessages().get("info.party_joined"));
+                    player.sendMessage(ChatColor.GREEN + (String) plugin.getMessages().get(MessageInfo.PARTY_JOINED.get()));
                 })
                 .register();
     }
