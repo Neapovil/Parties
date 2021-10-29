@@ -1,8 +1,8 @@
 package com.github.nearata.parties.util;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
@@ -14,19 +14,26 @@ public final class Util
 {
     private static final Parties plugin = Parties.getInstance();
 
-    public static Set<Player> getOnlineMembers(Set<String> entries, UUID leaderId)
+    public static Set<Player> getOnlineMembers(Player player, boolean excludeSelf)
     {
-        return entries.stream()
+        if (getParty(player).isEmpty())
+        {
+            return Collections.emptySet();
+        }
+
+        return getParty(player).get()
+                .getEntries()
+                .stream()
                 .map(username -> plugin.getServer().getPlayer(username))
-                .filter(player -> player != null)
-                .filter(player -> !player.getName().startsWith("leader-"))
-                .filter(player -> {
-                    if (leaderId == null)
+                .filter(p -> p != null)
+                .filter(p -> !p.getName().startsWith("leader-"))
+                .filter(p -> {
+                    if (!excludeSelf)
                     {
                         return true;
                     }
 
-                    return !player.getUniqueId().equals(leaderId);
+                    return !p.getUniqueId().equals(player.getUniqueId());
                 })
                 .collect(Collectors.toSet());
     }

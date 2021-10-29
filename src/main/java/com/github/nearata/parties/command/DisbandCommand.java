@@ -1,7 +1,5 @@
 package com.github.nearata.parties.command;
 
-import java.util.UUID;
-
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scoreboard.Team;
 
@@ -25,8 +23,6 @@ public final class DisbandCommand
                 .withPermission("parties.command.disband")
                 .withArguments(new LiteralArgument("disband"))
                 .executesPlayer((player, args) -> {
-                    final UUID uuid = player.getUniqueId();
-
                     if (Util.getParty(player).isEmpty())
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.NO_PARTY.get()));
@@ -41,15 +37,15 @@ public final class DisbandCommand
                         CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_DISBAND_NOT_LEADER.get()));
                     }
 
-                    data.remove(plugin.getKey());
-
                     final String msg = plugin.getMessage(MessageInfo.PARTY_DISBANDED_BY.get());
-                    Util.getOnlineMembers(team.getEntries(), uuid).forEach(p -> {
+                    Util.getOnlineMembers(player, true).forEach(p -> {
                         p.getPersistentDataContainer().remove(plugin.getKey());
                         p.sendMessage(ChatColor.RED + msg);
                     });
 
+                    data.remove(plugin.getKey());
                     team.unregister();
+
                     player.sendMessage(ChatColor.RED + plugin.getMessage(MessageInfo.PARTY_DISBANDED.get()));
                 })
                 .register();

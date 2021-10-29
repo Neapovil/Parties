@@ -58,7 +58,7 @@ public final class KickCommand
                     }
 
                     final String msg = plugin.getMessage(MessageInfo.PLAYER_KICKED.get()).formatted(player1.getName());
-                    Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
+                    Util.getOnlineMembers(player, true).forEach(p -> {
                         p.sendMessage(msg);
                     });
 

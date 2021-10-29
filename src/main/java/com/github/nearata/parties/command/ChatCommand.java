@@ -1,7 +1,5 @@
 package com.github.nearata.parties.command;
 
-import org.bukkit.scoreboard.Team;
-
 import com.github.nearata.parties.Parties;
 import com.github.nearata.parties.message.MessageError;
 import com.github.nearata.parties.util.Util;
@@ -27,10 +25,9 @@ public final class ChatCommand
                         CommandAPI.fail(plugin.getMessage(MessageError.NO_PARTY.get()));
                     }
 
-                    final Team team = Util.getParty(player).get();
                     final String msg = plugin.getMessage("info.party_chat").formatted(player.getName(), (String) args[0]);
 
-                    Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
+                    Util.getOnlineMembers(player, true).forEach(p -> {
                         p.sendMessage(msg);
                     });
                 })

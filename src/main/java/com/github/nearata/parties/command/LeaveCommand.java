@@ -33,13 +33,13 @@ public final class LeaveCommand
                         CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_LEAVE_LEADER.get()));
                     }
 
-                    player.getPersistentDataContainer().remove(plugin.getKey());
-                    team.removeEntry(player.getName());
-
                     final String msg = plugin.getMessage(MessageInfo.PLAYER_LEFT.get()).formatted(player.getName());
-                    Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
+                    Util.getOnlineMembers(player, true).forEach(p -> {
                         p.sendMessage(ChatColor.RED + msg);
                     });
+
+                    player.getPersistentDataContainer().remove(plugin.getKey());
+                    team.removeEntry(player.getName());
 
                     player.sendMessage(plugin.getMessage(MessageInfo.PARTY_LEFT.get()));
                 })

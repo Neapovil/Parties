@@ -3,7 +3,6 @@ package com.github.nearata.parties.command;
 import java.util.Optional;
 
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
 import com.github.nearata.parties.message.MessageError;
@@ -66,15 +65,13 @@ public final class AcceptCommand
                                         && i.getUUID().equals(player.getUniqueId());
                             });
 
-                    final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid.get());
+                    plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid.get()).addEntry(player.getName());
+                    player.getPersistentDataContainer().set(plugin.getKey(), plugin.getKeyType(), partyid.get());
 
                     final String msg = plugin.getMessage(MessageInfo.PLAYER_JOINED.get()).formatted(player.getName());
-                    Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
+                    Util.getOnlineMembers(player, true).forEach(p -> {
                         p.sendMessage(ChatColor.GREEN + msg);
                     });
-
-                    team.addEntry(player.getName());
-                    player.getPersistentDataContainer().set(plugin.getKey(), plugin.getKeyType(), partyid.get());
 
                     player.sendMessage(ChatColor.GREEN + plugin.getMessage(MessageInfo.PARTY_JOINED.get()));
                 })
