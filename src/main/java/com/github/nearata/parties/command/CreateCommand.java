@@ -8,6 +8,7 @@ import org.bukkit.scoreboard.Team;
 import com.github.nearata.parties.Parties;
 import com.github.nearata.parties.message.MessageError;
 import com.github.nearata.parties.message.MessageInfo;
+import com.github.nearata.parties.util.Util;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -26,7 +27,7 @@ public final class CreateCommand
                 .executesPlayer((player, args) -> {
                     final UUID uuid = player.getUniqueId();
 
-                    if (player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
+                    if (Util.getParty(player).isPresent())
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.HAS_PARTY.get()));
                     }

@@ -9,6 +9,7 @@ import com.github.nearata.parties.Parties;
 import com.github.nearata.parties.message.MessageError;
 import com.github.nearata.parties.message.MessageInfo;
 import com.github.nearata.parties.object.PartyInvite;
+import com.github.nearata.parties.util.Util;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -28,13 +29,12 @@ public final class InviteCommand
                 .executesPlayer((player, args) -> {
                     final UUID uuid = player.getUniqueId();
 
-                    if (!player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
+                    if (Util.getParty(player).isEmpty())
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.NO_PARTY.get()));
                     }
 
-                    final String partyid = player.getPersistentDataContainer().get(plugin.getKey(), plugin.getKeyType());
-                    final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
+                    final Team team = Util.getParty(player).get();
 
                     if (!team.getEntries().contains("leader-" + player.getName()))
                     {
@@ -49,17 +49,17 @@ public final class InviteCommand
                         CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_SELF_INVITE.get()));
                     }
 
-                    if (player1.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
+                    if (Util.getParty(player1).isPresent())
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.INVITED_PLAYER_HAS_PARTY.get()));
                     }
 
-                    if (plugin.getManager().getInvites().get(partyid).stream().anyMatch(i -> i.getUUID().equals(uuid1)))
+                    if (plugin.getManager().getInvites().get(team.getName()).stream().anyMatch(i -> i.getUUID().equals(uuid1)))
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.ALREADY_INVITED.get()));
                     }
 
-                    plugin.getManager().getInvites().put(partyid, new PartyInvite(player.getName(), uuid1));
+                    plugin.getManager().getInvites().put(team.getName(), new PartyInvite(player.getName(), uuid1));
 
                     player.sendMessage((plugin.getMessage(MessageInfo.INVITED.get())).formatted(player1.getName()));
                     player1.sendMessage((plugin.getMessage(MessageInfo.INVITED_BY.get())).formatted(player.getName()));

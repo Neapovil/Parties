@@ -35,7 +35,7 @@ public final class AcceptCommand
                             .toArray(String[]::new);
                 }))
                 .executesPlayer((player, args) -> {
-                    if (player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
+                    if (Util.getParty(player).isPresent())
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.HAS_PARTY.get()));
                     }
@@ -55,7 +55,7 @@ public final class AcceptCommand
 
                     if (partyid.isEmpty())
                     {
-                        CommandAPI.fail(MessageError.EXPIRED_INVITE.get());
+                        CommandAPI.fail(plugin.getMessage(MessageError.EXPIRED_INVITE.get()));
                     }
 
                     plugin.getManager()

@@ -26,13 +26,13 @@ public final class DisbandCommand
                 .withArguments(new LiteralArgument("disband"))
                 .executesPlayer((player, args) -> {
                     final UUID uuid = player.getUniqueId();
-                    final PersistentDataContainer data = player.getPersistentDataContainer();
 
-                    if (!data.has(plugin.getKey(), plugin.getKeyType()))
+                    if (Util.getParty(player).isEmpty())
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.NO_PARTY.get()));
                     }
 
+                    final PersistentDataContainer data = player.getPersistentDataContainer();
                     final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
                     final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
 

@@ -1,6 +1,5 @@
 package com.github.nearata.parties.command;
 
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
@@ -23,22 +22,18 @@ public final class LeaveCommand
                 .withPermission("parties.command.leave")
                 .withArguments(new LiteralArgument("leave"))
                 .executesPlayer((player, args) -> {
-                    final PersistentDataContainer data = player.getPersistentDataContainer();
-
-                    if (!data.has(plugin.getKey(), plugin.getKeyType()))
+                    if (Util.getParty(player).isEmpty())
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.NO_PARTY.get()));
                     }
 
-                    final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
-                    final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
-
+                    final Team team = Util.getParty(player).get();
                     if (team.getEntries().contains("leader-" + player.getName()))
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_LEAVE_LEADER.get()));
                     }
 
-                    data.remove(plugin.getKey());
+                    player.getPersistentDataContainer().remove(plugin.getKey());
                     team.removeEntry(player.getName());
 
                     final String msg = plugin.getMessage(MessageInfo.PLAYER_LEFT.get()).formatted(player.getName());

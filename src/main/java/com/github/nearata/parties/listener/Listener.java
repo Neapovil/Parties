@@ -3,10 +3,9 @@ package com.github.nearata.parties.listener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
+import com.github.nearata.parties.util.Util;
 
 public final class Listener implements org.bukkit.event.Listener
 {
@@ -16,19 +15,10 @@ public final class Listener implements org.bukkit.event.Listener
     public void playerJoin(PlayerJoinEvent event)
     {
         final Player player = event.getPlayer();
-        final PersistentDataContainer data = player.getPersistentDataContainer();
 
-        if (!data.has(plugin.getKey(), plugin.getKeyType()))
+        if (Util.getParty(player).isEmpty())
         {
-            return;
-        }
-
-        final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
-        final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
-
-        if (team == null || !team.getEntries().contains(player.getName()))
-        {
-            data.remove(plugin.getKey());
+            player.getPersistentDataContainer().remove(plugin.getKey());
         }
     }
 }
