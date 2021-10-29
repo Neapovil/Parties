@@ -37,7 +37,7 @@ public final class AcceptCommand
                 .executesPlayer((player, args) -> {
                     if (player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessages().get(MessageError.HAS_PARTY.get()));
+                        CommandAPI.fail(plugin.getMessage(MessageError.HAS_PARTY.get()));
                     }
 
                     final String issuer = (String) args[0];
@@ -68,15 +68,15 @@ public final class AcceptCommand
 
                     final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid.get());
 
+                    final String msg = plugin.getMessage(MessageInfo.PLAYER_JOINED.get()).formatted(player.getName());
                     Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
-                        final String msg = (String) plugin.getMessages().get(MessageInfo.PLAYER_JOINED.get());
-                        p.sendMessage(ChatColor.GREEN + msg.formatted(player.getName()));
+                        p.sendMessage(ChatColor.GREEN + msg);
                     });
 
                     team.addEntry(player.getName());
                     player.getPersistentDataContainer().set(plugin.getKey(), plugin.getKeyType(), partyid.get());
 
-                    player.sendMessage(ChatColor.GREEN + (String) plugin.getMessages().get(MessageInfo.PARTY_JOINED.get()));
+                    player.sendMessage(ChatColor.GREEN + plugin.getMessage(MessageInfo.PARTY_JOINED.get()));
                 })
                 .register();
     }

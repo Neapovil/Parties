@@ -59,9 +59,9 @@ public final class Parties extends JavaPlugin
         return instance;
     }
 
-    public FileConfig getMessages()
+    public String getMessage(String path)
     {
-        return this.messages;
+        return (String) this.messages.get(path);
     }
 
     public Manager getManager()

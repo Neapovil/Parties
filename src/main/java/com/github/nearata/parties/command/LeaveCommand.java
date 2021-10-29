@@ -27,7 +27,7 @@ public final class LeaveCommand
 
                     if (!data.has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessages().get(MessageError.NO_PARTY.get()));
+                        CommandAPI.fail(plugin.getMessage(MessageError.NO_PARTY.get()));
                     }
 
                     final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
@@ -35,18 +35,18 @@ public final class LeaveCommand
 
                     if (team.getEntries().contains("leader-" + player.getName()))
                     {
-                        CommandAPI.fail((String) plugin.getMessages().get(MessageError.CANNOT_LEAVE_LEADER.get()));
+                        CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_LEAVE_LEADER.get()));
                     }
 
                     data.remove(plugin.getKey());
                     team.removeEntry(player.getName());
 
+                    final String msg = plugin.getMessage(MessageInfo.PLAYER_LEFT.get()).formatted(player.getName());
                     Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
-                        final String msg = (String) plugin.getMessages().get(MessageInfo.PLAYER_LEFT.get());
-                        p.sendMessage(ChatColor.RED + msg.formatted(player.getName()));
+                        p.sendMessage(ChatColor.RED + msg);
                     });
 
-                    player.sendMessage((String) plugin.getMessages().get(MessageInfo.PARTY_LEFT.get()));
+                    player.sendMessage(plugin.getMessage(MessageInfo.PARTY_LEFT.get()));
                 })
                 .register();
     }

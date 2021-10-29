@@ -23,7 +23,7 @@ public final class ListCommand
                 .executesPlayer((player, args) -> {
                     if (!player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessages().get(MessageError.NO_PARTY.get()));
+                        CommandAPI.fail(plugin.getMessage(MessageError.NO_PARTY.get()));
                     }
 
                     final String partyid = player.getPersistentDataContainer().get(plugin.getKey(), plugin.getKeyType());

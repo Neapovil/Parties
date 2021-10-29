@@ -30,7 +30,7 @@ public final class InviteCommand
 
                     if (!player.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessages().get(MessageError.NO_PARTY.get()));
+                        CommandAPI.fail(plugin.getMessage(MessageError.NO_PARTY.get()));
                     }
 
                     final String partyid = player.getPersistentDataContainer().get(plugin.getKey(), plugin.getKeyType());
@@ -38,7 +38,7 @@ public final class InviteCommand
 
                     if (!team.getEntries().contains("leader-" + player.getName()))
                     {
-                        CommandAPI.fail((String) plugin.getMessages().get(MessageError.CANNOT_INVITE_NO_PERMISSIONS.get()));
+                        CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_INVITE_NO_PERMISSIONS.get()));
                     }
 
                     final Player player1 = (Player) args[0];
@@ -46,23 +46,23 @@ public final class InviteCommand
 
                     if (uuid.equals(uuid1))
                     {
-                        CommandAPI.fail(plugin.getMessages().get(MessageError.CANNOT_SELF_INVITE.get()));
+                        CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_SELF_INVITE.get()));
                     }
 
                     if (player1.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
                     {
-                        CommandAPI.fail(plugin.getMessages().get(MessageError.INVITED_PLAYER_HAS_PARTY.get()));
+                        CommandAPI.fail(plugin.getMessage(MessageError.INVITED_PLAYER_HAS_PARTY.get()));
                     }
 
                     if (plugin.getManager().getInvites().get(partyid).stream().anyMatch(i -> i.getUUID().equals(uuid1)))
                     {
-                        CommandAPI.fail(plugin.getMessages().get(MessageError.ALREADY_INVITED.get()));
+                        CommandAPI.fail(plugin.getMessage(MessageError.ALREADY_INVITED.get()));
                     }
 
                     plugin.getManager().getInvites().put(partyid, new PartyInvite(player.getName(), uuid1));
 
-                    player.sendMessage(((String) plugin.getMessages().get(MessageInfo.INVITED.get())).formatted(player1.getName()));
-                    player1.sendMessage(((String) plugin.getMessages().get(MessageInfo.INVITED_BY.get())).formatted(player.getName()));
+                    player.sendMessage((plugin.getMessage(MessageInfo.INVITED.get())).formatted(player1.getName()));
+                    player1.sendMessage((plugin.getMessage(MessageInfo.INVITED_BY.get())).formatted(player.getName()));
                 })
                 .register();
     }
