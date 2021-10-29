@@ -38,7 +38,7 @@ public final class InviteCommand
 
                     if (!team.getEntries().contains("leader-" + player.getName()))
                     {
-                        CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_INVITE_NO_PERMISSIONS.get()));
+                        CommandAPI.fail(plugin.getMessage(MessageError.NO_PERMISSIONS.get()));
                     }
 
                     final Player player1 = (Player) args[0];
