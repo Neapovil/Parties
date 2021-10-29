@@ -13,7 +13,6 @@ import com.github.nearata.parties.util.Util;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
-import net.md_5.bungee.api.ChatColor;
 
 public final class CreateCommand
 {
@@ -40,7 +39,7 @@ public final class CreateCommand
                     team.addEntry("leader-" + player.getName());
                     team.setAllowFriendlyFire(false);
 
-                    player.sendMessage(ChatColor.GREEN + plugin.getMessage(MessageInfo.PARTY_CREATED.get()));
+                    player.sendMessage(plugin.getMessage(MessageInfo.PARTY_CREATED.get()));
                 })
                 .register();
     }

@@ -13,7 +13,6 @@ import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
-import net.md_5.bungee.api.ChatColor;
 
 public final class AcceptCommand
 {
@@ -70,10 +69,10 @@ public final class AcceptCommand
 
                     final String msg = plugin.getMessage(MessageInfo.PLAYER_JOINED.get()).formatted(player.getName());
                     Util.getOnlineMembers(player, true).forEach(p -> {
-                        p.sendMessage(ChatColor.GREEN + msg);
+                        p.sendMessage(msg);
                     });
 
-                    player.sendMessage(ChatColor.GREEN + plugin.getMessage(MessageInfo.PARTY_JOINED.get()));
+                    player.sendMessage(plugin.getMessage(MessageInfo.PARTY_JOINED.get()));
                 })
                 .register();
     }

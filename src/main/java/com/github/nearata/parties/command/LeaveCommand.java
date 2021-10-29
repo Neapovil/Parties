@@ -10,7 +10,6 @@ import com.github.nearata.parties.util.Util;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
-import net.md_5.bungee.api.ChatColor;
 
 public final class LeaveCommand
 {
@@ -35,7 +34,7 @@ public final class LeaveCommand
 
                     final String msg = plugin.getMessage(MessageInfo.PLAYER_LEFT.get()).formatted(player.getName());
                     Util.getOnlineMembers(player, true).forEach(p -> {
-                        p.sendMessage(ChatColor.RED + msg);
+                        p.sendMessage(msg);
                     });
 
                     player.getPersistentDataContainer().remove(plugin.getKey());

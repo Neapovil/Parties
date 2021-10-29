@@ -24,7 +24,7 @@ dependencies {
 	compileOnly group: 'dev.jorel.CommandAPI', name: 'commandapi-core', version: '6.3.0'
 
 	implementation group: 'com.electronwill.night-config', name:'toml', version: '3.6.0'
-	//implementation group: 'net.kyori', name: 'adventure-text-minimessage', version: '4.1.0-SNAPSHOT'
+	implementation group: 'net.kyori', name: 'adventure-text-minimessage', version: '4.1.0-SNAPSHOT'
 }
 
 java {

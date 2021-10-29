@@ -61,8 +61,8 @@ public final class InviteCommand
 
                     plugin.getManager().getInvites().put(team.getName(), new PartyInvite(player.getName(), uuid1));
 
-                    player.sendMessage((plugin.getMessage(MessageInfo.INVITED.get())).formatted(player1.getName()));
-                    player1.sendMessage((plugin.getMessage(MessageInfo.INVITED_BY.get())).formatted(player.getName()));
+                    player.sendMessage(plugin.getMessage(MessageInfo.INVITED.get()).formatted(player1.getName()));
+                    player1.sendMessage(plugin.getMessage(MessageInfo.INVITED_BY.get()).formatted(player.getName()));
                 })
                 .register();
     }
