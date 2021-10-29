@@ -42,17 +42,16 @@ public final class InviteCommand
                     }
 
                     final Player player1 = (Player) args[0];
-
-                    if (player1.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
-                    {
-                        CommandAPI.fail(plugin.getMessages().get(MessageError.INVITED_PLAYER_HAS_PARTY.get()));
-                    }
-
                     final UUID uuid1 = player1.getUniqueId();
 
                     if (uuid.equals(uuid1))
                     {
                         CommandAPI.fail(plugin.getMessages().get(MessageError.CANNOT_SELF_INVITE.get()));
+                    }
+
+                    if (player1.getPersistentDataContainer().has(plugin.getKey(), plugin.getKeyType()))
+                    {
+                        CommandAPI.fail(plugin.getMessages().get(MessageError.INVITED_PLAYER_HAS_PARTY.get()));
                     }
 
                     if (plugin.getManager().getInvites().get(partyid).stream().anyMatch(i -> i.getUUID().equals(uuid1)))
