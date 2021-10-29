@@ -58,6 +58,14 @@ public final class AcceptCommand
                         CommandAPI.fail(MessageError.EXPIRED_INVITE.get());
                     }
 
+                    plugin.getManager()
+                            .getInvites()
+                            .values()
+                            .removeIf(i -> {
+                                return i.getIssuer().equals(issuer)
+                                        && i.getUUID().equals(player.getUniqueId());
+                            });
+
                     final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid.get());
 
                     Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
@@ -67,13 +75,6 @@ public final class AcceptCommand
 
                     team.addEntry(player.getName());
                     player.getPersistentDataContainer().set(plugin.getKey(), plugin.getKeyType(), partyid.get());
-                    plugin.getManager()
-                            .getInvites()
-                            .values()
-                            .removeIf(i -> {
-                                return i.getIssuer().equals(issuer)
-                                        && i.getUUID().equals(player.getUniqueId());
-                            });
 
                     player.sendMessage(ChatColor.GREEN + (String) plugin.getMessages().get(MessageInfo.PARTY_JOINED.get()));
                 })
