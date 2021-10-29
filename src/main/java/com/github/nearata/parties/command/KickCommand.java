@@ -54,15 +54,15 @@ public final class KickCommand
                     if (player1 != null)
                     {
                         player1.getPersistentDataContainer().remove(plugin.getKey());
-                        player1.sendMessage(MessageInfo.PARTY_KICKED.get());
+                        player1.sendMessage(plugin.getMessage(MessageInfo.PARTY_KICKED.get()));
                     }
 
-                    final String msg = MessageInfo.PLAYER_KICKED.get().formatted(player1.getName());
+                    final String msg = plugin.getMessage(MessageInfo.PLAYER_KICKED.get()).formatted(player1.getName());
                     Util.getOnlineMembers(team.getEntries(), null).forEach(p -> {
                         p.sendMessage(msg);
                     });
 
-                    player.sendMessage(plugin.getMessage(MessageInfo.YOU_KICKED.get()));
+                    player.sendMessage(plugin.getMessage(MessageInfo.YOU_KICKED.get()).formatted(player1.getName()));
                 })
                 .register();
     }

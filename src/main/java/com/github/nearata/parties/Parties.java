@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
 import com.github.nearata.parties.command.AcceptCommand;
+import com.github.nearata.parties.command.ChatCommand;
 import com.github.nearata.parties.command.CreateCommand;
 import com.github.nearata.parties.command.DisbandCommand;
 import com.github.nearata.parties.command.InviteCommand;
@@ -49,6 +50,7 @@ public final class Parties extends JavaPlugin
         AcceptCommand.register();
         LeaveCommand.register();
         KickCommand.register();
+        ChatCommand.register();
     }
 
     @Override
