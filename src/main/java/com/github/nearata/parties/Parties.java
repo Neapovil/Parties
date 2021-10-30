@@ -15,6 +15,7 @@ import com.github.nearata.parties.command.InviteCommand;
 import com.github.nearata.parties.command.KickCommand;
 import com.github.nearata.parties.command.LeaveCommand;
 import com.github.nearata.parties.command.ListCommand;
+import com.github.nearata.parties.command.PromoteCommand;
 import com.github.nearata.parties.listener.Listener;
 import com.github.nearata.parties.manager.Manager;
 import com.github.nearata.parties.runnable.PartyInviteRunnable;
@@ -51,6 +52,7 @@ public final class Parties extends JavaPlugin
         LeaveCommand.register();
         KickCommand.register();
         ChatCommand.register();
+        PromoteCommand.register();
     }
 
     @Override

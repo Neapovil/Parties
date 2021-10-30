@@ -14,6 +14,29 @@ public final class Util
 {
     private static final Parties plugin = Parties.getInstance();
 
+    public static Set<String> getMembers(Player player, boolean excludeSelf)
+    {
+        if (getParty(player).isEmpty())
+        {
+            return Collections.emptySet();
+        }
+
+        return getParty(player).get()
+                .getEntries()
+                .stream()
+                .filter(s -> !s.startsWith("leader-"))
+                .filter(s -> !s.startsWith("mod-"))
+                .filter(s -> {
+                    if (!excludeSelf)
+                    {
+                        return true;
+                    }
+
+                    return !s.startsWith(player.getName());
+                })
+                .collect(Collectors.toSet());
+    }
+
     public static Set<Player> getOnlineMembers(Player player, boolean excludeSelf)
     {
         if (getParty(player).isEmpty())
@@ -27,6 +50,7 @@ public final class Util
                 .map(username -> plugin.getServer().getPlayer(username))
                 .filter(p -> p != null)
                 .filter(p -> !p.getName().startsWith("leader-"))
+                .filter(p -> !p.getName().startsWith("mod-"))
                 .filter(p -> {
                     if (!excludeSelf)
                     {

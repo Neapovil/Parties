@@ -31,17 +31,25 @@ public final class ListCommand
 
                     final List<String> members = team.getEntries()
                             .stream()
-                            .filter(e -> !e.startsWith("leader-"))
+                            .filter(s -> !s.startsWith("leader-"))
+                            .filter(s -> !s.startsWith("mod-"))
                             .toList();
 
                     final String leader = team.getEntries()
                             .stream()
-                            .filter(e -> e.startsWith("leader-"))
-                            .findAny()
-                            .get()
-                            .replace("leader-", "");
+                            .filter(s -> s.startsWith("leader-"))
+                            .map(s -> s.replace("leader-", ""))
+                            .findFirst()
+                            .get();
+
+                    final List<String> mods = team.getEntries()
+                            .stream()
+                            .filter(e -> e.startsWith("mod-"))
+                            .map(s -> s.replace("mod-", ""))
+                            .toList();
 
                     player.sendMessage("Party Leader: " + leader);
+                    player.sendMessage("Party Mod: " + String.join(", ", mods));
                     player.sendMessage("Party Members: " + String.join(", ", members));
                 })
                 .register();
