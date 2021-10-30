@@ -5,7 +5,7 @@ import java.util.List;
 import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
-import com.github.nearata.parties.message.MessageError;
+import com.github.nearata.parties.messages.Messages;
 import com.github.nearata.parties.util.Util;
 
 import dev.jorel.commandapi.CommandAPI;
@@ -24,7 +24,7 @@ public final class ListCommand
                 .executesPlayer((player, args) -> {
                     if (Util.getParty(player).isEmpty())
                     {
-                        CommandAPI.fail(plugin.getMessage(MessageError.NO_PARTY.get()));
+                        CommandAPI.fail(plugin.getMessage(Messages.NO_PARTY.get()));
                     }
 
                     final Team team = Util.getParty(player).get();
@@ -48,9 +48,9 @@ public final class ListCommand
                             .map(s -> s.replace("mod-", ""))
                             .toList();
 
-                    player.sendMessage("Party Leader: " + leader);
-                    player.sendMessage("Party Mod: " + String.join(", ", mods));
-                    player.sendMessage("Party Members: " + String.join(", ", members));
+                    player.sendMessage(plugin.getMessage(Messages.SENDER_PARTY_LIST_LEADER.get()).formatted(leader));
+                    player.sendMessage(plugin.getMessage(Messages.SENDER_PARTY_LIST_MODS.get()).formatted(String.join(", ", mods)));
+                    player.sendMessage(plugin.getMessage(Messages.SENDER_PARTY_LIST_MEMBERS.get()).formatted(String.join(", ", members)));
                 })
                 .register();
     }

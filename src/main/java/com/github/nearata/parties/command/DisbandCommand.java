@@ -4,8 +4,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scoreboard.Team;
 
 import com.github.nearata.parties.Parties;
-import com.github.nearata.parties.message.MessageError;
-import com.github.nearata.parties.message.MessageInfo;
+import com.github.nearata.parties.messages.Messages;
 import com.github.nearata.parties.util.Util;
 import com.github.nearata.parties.util.Util.PartyRank;
 
@@ -25,7 +24,7 @@ public final class DisbandCommand
                 .executesPlayer((player, args) -> {
                     if (Util.getParty(player).isEmpty())
                     {
-                        CommandAPI.fail(plugin.getMessage(MessageError.NO_PARTY.get()));
+                        CommandAPI.fail(plugin.getMessage(Messages.NO_PARTY.get()));
                     }
 
                     final PersistentDataContainer data = player.getPersistentDataContainer();
@@ -34,10 +33,10 @@ public final class DisbandCommand
 
                     if (!Util.getRank(player).equals(PartyRank.LEADER))
                     {
-                        CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_DISBAND_NOT_LEADER.get()));
+                        CommandAPI.fail(plugin.getMessage(Messages.SENDER_CANNOT_DISBAND.get()));
                     }
 
-                    final String msg = plugin.getMessage(MessageInfo.PARTY_DISBANDED_BY.get());
+                    final String msg = plugin.getMessage(Messages.PARTY_DISBANDED.get());
                     Util.getOnlineMembers(player).forEach(p -> {
                         if (p.getName().equals(player.getName()))
                         {
@@ -51,7 +50,7 @@ public final class DisbandCommand
                     data.remove(plugin.getKey());
                     team.unregister();
 
-                    player.sendMessage(plugin.getMessage(MessageInfo.PARTY_DISBANDED.get()));
+                    player.sendMessage(plugin.getMessage(Messages.SENDER_DISBANDED.get()));
                 })
                 .register();
     }

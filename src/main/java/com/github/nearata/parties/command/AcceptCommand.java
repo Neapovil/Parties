@@ -5,8 +5,7 @@ import java.util.Optional;
 import org.bukkit.entity.Player;
 
 import com.github.nearata.parties.Parties;
-import com.github.nearata.parties.message.MessageError;
-import com.github.nearata.parties.message.MessageInfo;
+import com.github.nearata.parties.messages.Messages;
 import com.github.nearata.parties.util.Util;
 
 import dev.jorel.commandapi.CommandAPI;
@@ -35,7 +34,7 @@ public final class AcceptCommand
                 .executesPlayer((player, args) -> {
                     if (Util.getParty(player).isPresent())
                     {
-                        CommandAPI.fail(plugin.getMessage(MessageError.HAS_PARTY.get()));
+                        CommandAPI.fail(plugin.getMessage(Messages.HAS_PARTY.get()));
                     }
 
                     final String issuer = (String) args[0];
@@ -53,7 +52,7 @@ public final class AcceptCommand
 
                     if (partyid.isEmpty())
                     {
-                        CommandAPI.fail(plugin.getMessage(MessageError.EXPIRED_INVITE.get()));
+                        CommandAPI.fail(plugin.getMessage(Messages.SENDER_INVITED_EXPIRED.get()));
                     }
 
                     plugin.getManager()
@@ -67,7 +66,7 @@ public final class AcceptCommand
                     plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid.get()).addEntry(player.getName());
                     player.getPersistentDataContainer().set(plugin.getKey(), plugin.getKeyType(), partyid.get());
 
-                    final String msg = plugin.getMessage(MessageInfo.PLAYER_JOINED.get()).formatted(player.getName());
+                    final String msg = plugin.getMessage(Messages.PARTY_INVITED_JOINED.get()).formatted(player.getName());
                     Util.getOnlineMembers(player).forEach(p -> {
                         if (p.getName().equals(player.getName()))
                         {
@@ -77,7 +76,7 @@ public final class AcceptCommand
                         p.sendMessage(msg);
                     });
 
-                    player.sendMessage(plugin.getMessage(MessageInfo.PARTY_JOINED.get()));
+                    player.sendMessage(plugin.getMessage(Messages.SENDER_INVITED_JOINED.get()));
                 })
                 .register();
     }
