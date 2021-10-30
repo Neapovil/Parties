@@ -10,6 +10,7 @@ import com.github.nearata.parties.Parties;
 import com.github.nearata.parties.message.MessageError;
 import com.github.nearata.parties.message.MessageInfo;
 import com.github.nearata.parties.util.Util;
+import com.github.nearata.parties.util.Util.PartyRank;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -27,7 +28,8 @@ public final class PromoteCommand
                 .withPermission("party.command.promote")
                 .withArguments(new MultiLiteralArgument("promote", "demote"))
                 .withArguments(new StringArgument("player").replaceSuggestions(info -> {
-                    return Util.getMembers((Player) info.sender(), true).toArray(String[]::new);
+                    final Player player = (Player) info.sender();
+                    return Util.getMembers(player).stream().filter(s -> !s.startsWith(player.getName())).toArray(String[]::new);
                 }))
                 .withArguments(new StringArgument("rank").replaceSuggestions(info -> {
                     if (info.previousArgs()[0].equals("promote"))
@@ -39,7 +41,7 @@ public final class PromoteCommand
                 }))
                 .executesPlayer((player, args) -> {
                     final String command = (String) args[0];
-                    final String playername = (String) args[1];
+                    final String player1name = (String) args[1];
                     final String rank = (String) args[2];
 
                     if (Util.getParty(player).isEmpty())
@@ -49,22 +51,22 @@ public final class PromoteCommand
 
                     final Team team = Util.getParty(player).get();
 
-                    if (!team.getEntries().contains("leader-" + player.getName()))
+                    if (!Util.getRank(player).equals(PartyRank.LEADER))
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.NO_PERMISSIONS_ONLY_LEADER.get()));
                     }
 
-                    if (player.getName().equals(playername))
+                    if (player.getName().equals(player1name))
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_SELF_PROMOTE.get()));
                     }
 
-                    if (!team.getEntries().contains(playername))
+                    if (!team.getEntries().contains(player1name))
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.PLAYER_NOT_FOUND.get()));
                     }
 
-                    final Player player1 = plugin.getServer().getPlayer(playername);
+                    final Player player1 = plugin.getServer().getPlayer(player1name);
                     String player1msg;
                     String partymsg;
                     String sendermsg;
@@ -76,7 +78,7 @@ public final class PromoteCommand
                             CommandAPI.fail(plugin.getMessage(MessageError.PARTY_RANK_NOT_FOUND.get()));
                         }
 
-                        if (team.getEntries().contains(rank + "-" + playername))
+                        if (team.getEntries().contains(rank + "-" + player1name))
                         {
                             CommandAPI.fail(plugin.getMessage(MessageError.PLAYER_ALREADY_MOD.get()));
                         }
@@ -85,16 +87,16 @@ public final class PromoteCommand
                         {
                             team.removeEntry("leader-" + player.getName());
 
-                            if (team.getEntries().contains("mod-" + playername))
+                            if (team.getEntries().contains("mod-" + player1name))
                             {
-                                team.removeEntry("mod-" + playername);
+                                team.removeEntry("mod-" + player1name);
                             }
                         }
 
-                        team.addEntry(rank + "-" + playername);
+                        team.addEntry(rank + "-" + player1name);
                         player1msg = plugin.getMessage(MessageInfo.PLAYER_PROMOTED.get()).formatted(rank);
-                        partymsg = plugin.getMessage(MessageInfo.PARTY_PROMOTED.get()).formatted(playername, rank);
-                        sendermsg = plugin.getMessage(MessageInfo.SENDER_PROMOTED.get()).formatted(playername, rank);
+                        partymsg = plugin.getMessage(MessageInfo.PARTY_PROMOTED.get()).formatted(player1name, rank);
+                        sendermsg = plugin.getMessage(MessageInfo.SENDER_PROMOTED.get()).formatted(player1name, rank);
                     }
                     else
                     {
@@ -103,15 +105,15 @@ public final class PromoteCommand
                             CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_DEMOTE_LEADER.get()));
                         }
 
-                        if (!team.getEntries().contains("mod-" + playername))
+                        if (!team.getEntries().contains("mod-" + player1name))
                         {
                             CommandAPI.fail(plugin.getMessage(MessageError.PLAYER_NOT_MOD.get()));
                         }
 
-                        team.removeEntry("mod-" + playername);
+                        team.removeEntry("mod-" + player1name);
                         player1msg = plugin.getMessage(MessageInfo.PLAYER_DEMOTED.get());
-                        partymsg = plugin.getMessage(MessageInfo.PARTY_DEMOTED.get()).formatted(playername);
-                        sendermsg = plugin.getMessage(MessageInfo.SENDER_DEMOTED.get()).formatted(playername);
+                        partymsg = plugin.getMessage(MessageInfo.PARTY_DEMOTED.get()).formatted(player1name);
+                        sendermsg = plugin.getMessage(MessageInfo.SENDER_DEMOTED.get()).formatted(player1name);
                     }
 
                     if (player1 != null)
@@ -119,8 +121,13 @@ public final class PromoteCommand
                         player1.sendMessage(player1msg);
                     }
 
-                    Util.getOnlineMembers(player, true).forEach(p -> {
-                        if (p.getName().equals(playername))
+                    Util.getOnlineMembers(player).forEach(p -> {
+                        if (p.getName().equals(player.getName()))
+                        {
+                            return;
+                        }
+
+                        if (p.getName().equals(player1name))
                         {
                             return;
                         }

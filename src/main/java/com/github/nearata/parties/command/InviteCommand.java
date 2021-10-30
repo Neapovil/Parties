@@ -10,6 +10,7 @@ import com.github.nearata.parties.message.MessageError;
 import com.github.nearata.parties.message.MessageInfo;
 import com.github.nearata.parties.object.PartyInvite;
 import com.github.nearata.parties.util.Util;
+import com.github.nearata.parties.util.Util.PartyRank;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -36,7 +37,7 @@ public final class InviteCommand
 
                     final Team team = Util.getParty(player).get();
 
-                    if (!team.getEntries().contains("leader-" + player.getName()))
+                    if (!(Util.getRank(player).equals(PartyRank.MOD) || Util.getRank(player).equals(PartyRank.LEADER)))
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.NO_PERMISSIONS.get()));
                     }

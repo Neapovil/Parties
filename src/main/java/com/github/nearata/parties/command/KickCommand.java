@@ -1,7 +1,5 @@
 package com.github.nearata.parties.command;
 
-import java.util.Arrays;
-
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -9,6 +7,7 @@ import com.github.nearata.parties.Parties;
 import com.github.nearata.parties.message.MessageError;
 import com.github.nearata.parties.message.MessageInfo;
 import com.github.nearata.parties.util.Util;
+import com.github.nearata.parties.util.Util.PartyRank;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -25,7 +24,8 @@ public final class KickCommand
                 .withPermission("party.command.kick")
                 .withArguments(new LiteralArgument("kick"))
                 .withArguments(new StringArgument("player").replaceSuggestions(info -> {
-                    return Arrays.asList(plugin.getServer().getOfflinePlayers()).stream().map(p -> p.getName()).toArray(String[]::new);
+                    final Player player = (Player) info.sender();
+                    return Util.getMembers(player).stream().filter(s -> !s.startsWith(player.getName())).toArray(String[]::new);
                 }))
                 .executesPlayer((player, args) -> {
                     final String playername = (String) args[0];
@@ -37,14 +37,29 @@ public final class KickCommand
 
                     final Team team = Util.getParty(player).get();
 
-                    if (!team.getEntries().contains("leader-" + player.getName()))
+                    if (!(Util.getRank(player).equals(PartyRank.MOD) || Util.getRank(player).equals(PartyRank.LEADER)))
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.NO_PERMISSIONS.get()));
+                    }
+
+                    if (playername.equals(player.getName()))
+                    {
+                        CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_KICK_SELF.get()));
                     }
 
                     if (!team.getEntries().contains(playername))
                     {
                         CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_KICK_NOT_IN_PARTY.get()));
+                    }
+
+                    if (!Util.getRank(player).equals(PartyRank.LEADER) && team.getEntries().contains("mod-" + playername))
+                    {
+                        CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_KICK_MOD.get()));
+                    }
+
+                    if (team.getEntries().contains("leader-" + playername))
+                    {
+                        CommandAPI.fail(plugin.getMessage(MessageError.CANNOT_KICK_LEADER.get()));
                     }
 
                     team.removeEntry(playername);
@@ -58,7 +73,12 @@ public final class KickCommand
                     }
 
                     final String msg = plugin.getMessage(MessageInfo.PLAYER_KICKED.get()).formatted(player1.getName());
-                    Util.getOnlineMembers(player, true).forEach(p -> {
+                    Util.getOnlineMembers(player).forEach(p -> {
+                        if (p.getName().equals(player.getName()))
+                        {
+                            return;
+                        }
+
                         p.sendMessage(msg);
                     });
 

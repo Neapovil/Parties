@@ -18,7 +18,10 @@ public enum MessageError
     PARTY_RANK_NOT_FOUND("party_rank_not_found"),
     CANNOT_SELF_PROMOTE("cannot_self_promote"),
     PLAYER_NOT_MOD("player_not_mod"),
-    CANNOT_DEMOTE_LEADER("cannot_demote_leader");
+    CANNOT_DEMOTE_LEADER("cannot_demote_leader"),
+    CANNOT_KICK_LEADER("cannot_kick_leader"),
+    CANNOT_KICK_SELF("cannot_kick_self"),
+    CANNOT_KICK_MOD("cannot_kick_mod");
 
     private final String message;
 

@@ -14,7 +14,7 @@ public final class Util
 {
     private static final Parties plugin = Parties.getInstance();
 
-    public static Set<String> getMembers(Player player, boolean excludeSelf)
+    public static Set<String> getMembers(Player player)
     {
         if (getParty(player).isEmpty())
         {
@@ -26,39 +26,16 @@ public final class Util
                 .stream()
                 .filter(s -> !s.startsWith("leader-"))
                 .filter(s -> !s.startsWith("mod-"))
-                .filter(s -> {
-                    if (!excludeSelf)
-                    {
-                        return true;
-                    }
-
-                    return !s.startsWith(player.getName());
-                })
                 .collect(Collectors.toSet());
     }
 
-    public static Set<Player> getOnlineMembers(Player player, boolean excludeSelf)
+    public static Set<Player> getOnlineMembers(Player player)
     {
-        if (getParty(player).isEmpty())
-        {
-            return Collections.emptySet();
-        }
-
-        return getParty(player).get()
-                .getEntries()
-                .stream()
+        return getMembers(player).stream()
                 .map(username -> plugin.getServer().getPlayer(username))
                 .filter(p -> p != null)
                 .filter(p -> !p.getName().startsWith("leader-"))
                 .filter(p -> !p.getName().startsWith("mod-"))
-                .filter(p -> {
-                    if (!excludeSelf)
-                    {
-                        return true;
-                    }
-
-                    return !p.getUniqueId().equals(player.getUniqueId());
-                })
                 .collect(Collectors.toSet());
     }
 
@@ -84,5 +61,35 @@ public final class Util
         }
 
         return Optional.ofNullable(team);
+    }
+
+    public static PartyRank getRank(Player player)
+    {
+        if (getParty(player).isEmpty())
+        {
+            return PartyRank.NONE;
+        }
+
+        final Set<String> entries = getParty(player).get().getEntries();
+
+        if (entries.contains("leader-" + player.getName()))
+        {
+            return PartyRank.LEADER;
+        }
+
+        if (entries.contains("mod-" + player.getName()))
+        {
+            return PartyRank.MOD;
+        }
+
+        return PartyRank.MEMBER;
+    }
+
+    public static enum PartyRank
+    {
+        LEADER,
+        MOD,
+        MEMBER,
+        NONE
     }
 }

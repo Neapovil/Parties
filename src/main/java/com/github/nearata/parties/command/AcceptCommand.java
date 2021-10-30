@@ -68,7 +68,12 @@ public final class AcceptCommand
                     player.getPersistentDataContainer().set(plugin.getKey(), plugin.getKeyType(), partyid.get());
 
                     final String msg = plugin.getMessage(MessageInfo.PLAYER_JOINED.get()).formatted(player.getName());
-                    Util.getOnlineMembers(player, true).forEach(p -> {
+                    Util.getOnlineMembers(player).forEach(p -> {
+                        if (p.getName().equals(player.getName()))
+                        {
+                            return;
+                        }
+
                         p.sendMessage(msg);
                     });
 

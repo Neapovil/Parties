@@ -27,7 +27,12 @@ public final class ChatCommand
 
                     final String msg = plugin.getMessage("info.party_chat").formatted(player.getName(), (String) args[0]);
 
-                    Util.getOnlineMembers(player, true).forEach(p -> {
+                    Util.getOnlineMembers(player).forEach(p -> {
+                        if (p.getName().equals(player.getName()))
+                        {
+                            return;
+                        }
+
                         p.sendMessage(msg);
                     });
                 })
