@@ -8,6 +8,7 @@ public enum Messages
     PARTY_INVITED_JOINED("party_invited_joined"),
     SENDER_INVITED_JOINED("sender_invited_joined"),
     PARTY_CHAT_MESSAGE("party_chat_message"),
+    PARTY_CHAT_MESSAGE_HAS_RANK("party_chat_message_has_rank"),
     SENDER_PARTY_CREATED("sender_party_created"),
     SENDER_CANNOT_DISBAND("sender_cannot_disband"),
     PARTY_DISBANDED("party_disbanded"),

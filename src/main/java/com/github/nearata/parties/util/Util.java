@@ -87,9 +87,21 @@ public final class Util
 
     public static enum PartyRank
     {
-        LEADER,
-        MOD,
-        MEMBER,
-        NONE
+        LEADER("messages.party_rank_leader"),
+        MOD("messages.party_rank_mod"),
+        MEMBER(""),
+        NONE("");
+
+        private final String title;
+
+        PartyRank(String title)
+        {
+            this.title = title;
+        }
+
+        public String get()
+        {
+            return this.title;
+        }
     }
 }
