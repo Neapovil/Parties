@@ -16,7 +16,7 @@ public final class ChatCommand
     public static void register()
     {
         new CommandAPICommand("party")
-                .withPermission("party.command.chat")
+                .withPermission("parties.command.chat")
                 .withArguments(new LiteralArgument("chat"))
                 .withArguments(new GreedyStringArgument("message"))
                 .executesPlayer((player, args) -> {

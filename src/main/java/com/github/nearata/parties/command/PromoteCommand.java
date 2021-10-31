@@ -24,7 +24,7 @@ public final class PromoteCommand
     public static void register()
     {
         new CommandAPICommand("party")
-                .withPermission("party.command.promote")
+                .withPermission("parties.command.promote")
                 .withArguments(new MultiLiteralArgument("promote", "demote"))
                 .withArguments(new StringArgument("player").replaceSuggestions(info -> {
                     final Player player = (Player) info.sender();

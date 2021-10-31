@@ -20,7 +20,7 @@ public final class KickCommand
     public static void register()
     {
         new CommandAPICommand("party")
-                .withPermission("party.command.kick")
+                .withPermission("parties.command.kick")
                 .withArguments(new LiteralArgument("kick"))
                 .withArguments(new StringArgument("player").replaceSuggestions(info -> {
                     final Player player = (Player) info.sender();
