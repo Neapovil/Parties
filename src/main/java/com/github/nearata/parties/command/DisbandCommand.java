@@ -8,7 +8,6 @@ import com.github.nearata.parties.messages.Messages;
 import com.github.nearata.parties.util.Util;
 import com.github.nearata.parties.util.Util.PartyRank;
 
-import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 
@@ -24,7 +23,7 @@ public final class DisbandCommand
                 .executesPlayer((player, args) -> {
                     if (Util.getParty(player).isEmpty())
                     {
-                        CommandAPI.fail(plugin.getMessage(Messages.NO_PARTY.get()));
+                        Messages.NO_PARTY.fail();
                     }
 
                     final PersistentDataContainer data = player.getPersistentDataContainer();
@@ -33,10 +32,9 @@ public final class DisbandCommand
 
                     if (!Util.getRank(player).equals(PartyRank.LEADER))
                     {
-                        CommandAPI.fail(plugin.getMessage(Messages.SENDER_CANNOT_DISBAND.get()));
+                        Messages.SENDER_CANNOT_DISBAND.fail();
                     }
 
-                    final String msg = plugin.getMessage(Messages.PARTY_DISBANDED.get());
                     Util.getOnlineMembers(player).forEach(p -> {
                         if (p.getName().equals(player.getName()))
                         {
@@ -44,13 +42,13 @@ public final class DisbandCommand
                         }
 
                         p.getPersistentDataContainer().remove(plugin.getKey());
-                        p.sendMessage(msg);
+                        Messages.PARTY_DISBANDED.send(p);
                     });
 
                     data.remove(plugin.getKey());
                     team.unregister();
 
-                    player.sendMessage(plugin.getMessage(Messages.SENDER_DISBANDED.get()));
+                    Messages.SENDER_DISBANDED.send(player);
                 })
                 .register();
     }

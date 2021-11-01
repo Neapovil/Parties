@@ -9,7 +9,6 @@ import com.github.nearata.parties.Parties;
 import com.github.nearata.parties.messages.Messages;
 import com.github.nearata.parties.util.Util;
 
-import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 
@@ -27,7 +26,7 @@ public final class CreateCommand
 
                     if (Util.getParty(player).isPresent())
                     {
-                        CommandAPI.fail(plugin.getMessage(Messages.HAS_PARTY.get()));
+                        Messages.HAS_PARTY.fail();
                     }
 
                     final String partyid = StringUtils.left(uuid.toString().replace("-", ""), 16);
@@ -38,7 +37,7 @@ public final class CreateCommand
                     team.addEntry("leader-" + player.getName());
                     team.setAllowFriendlyFire(false);
 
-                    player.sendMessage(plugin.getMessage(Messages.SENDER_PARTY_CREATED.get()));
+                    Messages.SENDER_PARTY_CREATED.send(player);
                 })
                 .register();
     }

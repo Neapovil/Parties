@@ -7,7 +7,6 @@ import com.github.nearata.parties.messages.Messages;
 import com.github.nearata.parties.util.Util;
 import com.github.nearata.parties.util.Util.PartyRank;
 
-import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
@@ -27,16 +26,20 @@ public final class ChatCommand
 
                     if (Util.getParty(player).isEmpty())
                     {
-                        CommandAPI.fail(plugin.getMessage(Messages.NO_PARTY.get()));
+                        Messages.NO_PARTY.fail();
                     }
 
                     final String rankname = plugin.getMessage(Util.getRank(player).get());
-                    final String msg = Set.of(PartyRank.LEADER, PartyRank.MOD).contains(Util.getRank(player))
-                            ? plugin.getMessage(Messages.PARTY_CHAT_MESSAGE_HAS_RANK.get()).formatted(rankname, player.getName(), message)
-                            : plugin.getMessage(Messages.PARTY_CHAT_MESSAGE.get()).formatted(player.getName(), message);
 
                     Util.getOnlineMembers(player).forEach(p -> {
-                        p.sendMessage(msg);
+                        if (Set.of(PartyRank.LEADER, PartyRank.MOD).contains(Util.getRank(player)))
+                        {
+                            Messages.PARTY_CHAT_MESSAGE_HAS_RANK.send(p, rankname, player.getName(), message);
+                        }
+                        else
+                        {
+                            Messages.PARTY_CHAT_MESSAGE.send(p, player.getName(), message);
+                        }
                     });
                 })
                 .register();

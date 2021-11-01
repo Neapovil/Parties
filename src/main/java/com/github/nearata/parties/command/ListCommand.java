@@ -4,18 +4,14 @@ import java.util.List;
 
 import org.bukkit.scoreboard.Team;
 
-import com.github.nearata.parties.Parties;
 import com.github.nearata.parties.messages.Messages;
 import com.github.nearata.parties.util.Util;
 
-import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 
 public final class ListCommand
 {
-    private static final Parties plugin = Parties.getInstance();
-
     public static void register()
     {
         new CommandAPICommand("party")
@@ -24,7 +20,7 @@ public final class ListCommand
                 .executesPlayer((player, args) -> {
                     if (Util.getParty(player).isEmpty())
                     {
-                        CommandAPI.fail(plugin.getMessage(Messages.NO_PARTY.get()));
+                        Messages.NO_PARTY.fail();
                     }
 
                     final Team team = Util.getParty(player).get();
@@ -48,9 +44,9 @@ public final class ListCommand
                             .map(s -> s.replace("mod-", ""))
                             .toList();
 
-                    player.sendMessage(plugin.getMessage(Messages.SENDER_PARTY_LIST_LEADER.get()).formatted(leader));
-                    player.sendMessage(plugin.getMessage(Messages.SENDER_PARTY_LIST_MODS.get()).formatted(String.join(", ", mods)));
-                    player.sendMessage(plugin.getMessage(Messages.SENDER_PARTY_LIST_MEMBERS.get()).formatted(String.join(", ", members)));
+                    Messages.SENDER_PARTY_LIST_LEADER.send(player, leader);
+                    Messages.SENDER_PARTY_LIST_MODS.send(player, String.join(", ", mods));
+                    Messages.SENDER_PARTY_LIST_MEMBERS.send(player, String.join(", ", members));
                 })
                 .register();
     }

@@ -11,7 +11,6 @@ import com.github.nearata.parties.messages.Messages;
 import com.github.nearata.parties.util.Util;
 import com.github.nearata.parties.util.Util.PartyRank;
 
-import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
@@ -45,41 +44,46 @@ public final class PromoteCommand
 
                     if (Util.getParty(player).isEmpty())
                     {
-                        CommandAPI.fail(plugin.getMessage(Messages.NO_PARTY.get()));
+                        Messages.NO_PARTY.fail();
                     }
 
                     final Team team = Util.getParty(player).get();
 
                     if (!Util.getRank(player).equals(PartyRank.LEADER))
                     {
-                        CommandAPI.fail(plugin.getMessage(Messages.SENDER_NO_PERMISSIONS_ONLY_LEADER.get()));
+                        Messages.SENDER_NO_PERMISSIONS_ONLY_LEADER.fail();
                     }
 
                     if (player.getName().equals(player1name))
                     {
-                        CommandAPI.fail(plugin.getMessage(Messages.SENDER_CANNOT_PROMOTE_SELF.get()));
+                        Messages.SENDER_CANNOT_PROMOTE_SELF.fail();
                     }
 
                     if (!team.getEntries().contains(player1name))
                     {
-                        CommandAPI.fail(plugin.getMessage(Messages.SENDER_PLAYER_NOT_FOUND.get()));
+                        Messages.SENDER_PLAYER_NOT_FOUND.fail();
                     }
 
                     final Player player1 = plugin.getServer().getPlayer(player1name);
-                    String player1msg;
-                    String partymsg;
-                    String sendermsg;
+                    Messages player1msg;
+                    List<String> player1obj;
+
+                    Messages partymsg;
+                    List<String> partyobj;
+
+                    Messages sendermsg;
+                    List<String> senderobj;
 
                     if (command.equals("promote"))
                     {
                         if (!ranks.contains(rank))
                         {
-                            CommandAPI.fail(plugin.getMessage(Messages.SENDER_PARTY_RANK_NOT_FOUND.get()));
+                            Messages.SENDER_PARTY_RANK_NOT_FOUND.fail();
                         }
 
                         if (team.getEntries().contains(rank + "-" + player1name))
                         {
-                            CommandAPI.fail(plugin.getMessage(Messages.SENDER_PLAYER_ALREADY_MOD.get()));
+                            Messages.SENDER_PLAYER_ALREADY_MOD.fail();
                         }
 
                         if (rank.equals("leader"))
@@ -93,31 +97,43 @@ public final class PromoteCommand
                         }
 
                         team.addEntry(rank + "-" + player1name);
-                        player1msg = plugin.getMessage(Messages.PLAYER_PROMOTED.get()).formatted(rank);
-                        partymsg = plugin.getMessage(Messages.PARTY_PROMOTED.get()).formatted(player1name, rank);
-                        sendermsg = plugin.getMessage(Messages.SENDER_PROMOTED.get()).formatted(player1name, rank);
+
+                        player1msg = Messages.PLAYER_PROMOTED;
+                        player1obj = List.of(rank);
+
+                        partymsg = Messages.PARTY_PROMOTED;
+                        partyobj = List.of(player1name, rank);
+
+                        sendermsg = Messages.SENDER_PROMOTED;
+                        senderobj = List.of(player1name, rank);
                     }
                     else
                     {
                         if (rank.equals("leader"))
                         {
-                            CommandAPI.fail(plugin.getMessage(Messages.SENDER_CANNOT_DEMOTE_LEADER.get()));
+                            Messages.SENDER_CANNOT_DEMOTE_LEADER.fail();
                         }
 
                         if (!team.getEntries().contains("mod-" + player1name))
                         {
-                            CommandAPI.fail(plugin.getMessage(Messages.SENDER_PLAYER_NOT_MOD.get()));
+                            Messages.SENDER_PLAYER_NOT_MOD.fail();
                         }
 
                         team.removeEntry("mod-" + player1name);
-                        player1msg = plugin.getMessage(Messages.PLAYER_DEMOTED.get());
-                        partymsg = plugin.getMessage(Messages.PARTY_DEMOTED.get()).formatted(player1name);
-                        sendermsg = plugin.getMessage(Messages.SENDER_DEMOTED.get()).formatted(player1name);
+
+                        player1msg = Messages.PLAYER_DEMOTED;
+                        player1obj = List.of();
+
+                        partymsg = Messages.PARTY_DEMOTED;
+                        partyobj = List.of(player1name);
+
+                        sendermsg = Messages.SENDER_DEMOTED;
+                        senderobj = List.of(player1name);
                     }
 
                     if (player1 != null)
                     {
-                        player1.sendMessage(player1msg);
+                        player1msg.send(player1, player1obj.toArray());
                     }
 
                     Util.getOnlineMembers(player).forEach(p -> {
@@ -131,10 +147,10 @@ public final class PromoteCommand
                             return;
                         }
 
-                        p.sendMessage(partymsg);
+                        partymsg.send(p, partyobj.toArray());
                     });
 
-                    player.sendMessage(sendermsg);
+                    sendermsg.send(player, senderobj.toArray());
                 })
                 .register();
     }

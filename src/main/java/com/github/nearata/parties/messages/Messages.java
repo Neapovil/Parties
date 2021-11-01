@@ -1,5 +1,12 @@
 package com.github.nearata.parties.messages;
 
+import org.bukkit.entity.Player;
+
+import com.github.nearata.parties.Parties;
+
+import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+
 public enum Messages
 {
     NO_PARTY("no_party"),
@@ -14,10 +21,10 @@ public enum Messages
     PARTY_DISBANDED("party_disbanded"),
     SENDER_DISBANDED("sender_disbanded"),
     SENDER_NO_PERMISSIONS("sender_no_permissions"),
-    SENDER_CANNOT_SELF_INVITED("self_cannot_self_invited"),
-    SENDER_INVITED_PLAYER_HAS_PARTY("self_invited_player_has_party"),
-    SENDER_PLAYER_ALREADY_INVITED("self_player_already_invited"),
-    SENDER_PLAYER_INVITED("self_player_invited"),
+    SENDER_CANNOT_SELF_INVITED("sender_cannot_self_invited"),
+    SENDER_INVITED_PLAYER_HAS_PARTY("sender_invited_player_has_party"),
+    SENDER_PLAYER_ALREADY_INVITED("sender_player_already_invited"),
+    SENDER_PLAYER_INVITED("sender_player_invited"),
     PLAYER_INVITED("player_invited"),
     SENDER_CANNOT_KICK_SELF("sender_cannot_kick_self"),
     SENDER_PLAYER_NOT_IN_PARTY("sender_player_not_in_party"),
@@ -46,6 +53,7 @@ public enum Messages
     SENDER_PARTY_LIST_MODS("sender_party_list_mods"),
     SENDER_PARTY_LIST_MEMBERS("sender_party_list_members");
 
+    private final Parties plugin = Parties.getInstance();
     private final String path;
 
     Messages(String path)
@@ -56,5 +64,16 @@ public enum Messages
     public String get()
     {
         return "messages." + this.path;
+    }
+
+    public void send(Player player, Object... args)
+    {
+        final String message = plugin.getMessage(this.get()).formatted(args);
+        player.sendMessage(message);
+    }
+
+    public void fail() throws WrapperCommandSyntaxException
+    {
+        CommandAPI.fail(plugin.getMessage(this.get()));
     }
 }

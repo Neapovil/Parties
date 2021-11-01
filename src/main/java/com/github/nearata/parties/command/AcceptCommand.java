@@ -8,7 +8,6 @@ import com.github.nearata.parties.Parties;
 import com.github.nearata.parties.messages.Messages;
 import com.github.nearata.parties.util.Util;
 
-import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
@@ -34,7 +33,7 @@ public final class AcceptCommand
                 .executesPlayer((player, args) -> {
                     if (Util.getParty(player).isPresent())
                     {
-                        CommandAPI.fail(plugin.getMessage(Messages.HAS_PARTY.get()));
+                        Messages.HAS_PARTY.fail();
                     }
 
                     final String issuer = (String) args[0];
@@ -52,7 +51,7 @@ public final class AcceptCommand
 
                     if (partyid.isEmpty())
                     {
-                        CommandAPI.fail(plugin.getMessage(Messages.SENDER_INVITED_EXPIRED.get()));
+                        Messages.SENDER_INVITED_EXPIRED.fail();
                     }
 
                     plugin.getManager()
@@ -66,17 +65,16 @@ public final class AcceptCommand
                     plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid.get()).addEntry(player.getName());
                     player.getPersistentDataContainer().set(plugin.getKey(), plugin.getKeyType(), partyid.get());
 
-                    final String msg = plugin.getMessage(Messages.PARTY_INVITED_JOINED.get()).formatted(player.getName());
                     Util.getOnlineMembers(player).forEach(p -> {
                         if (p.getName().equals(player.getName()))
                         {
                             return;
                         }
 
-                        p.sendMessage(msg);
+                        Messages.PARTY_INVITED_JOINED.send(p, player.getName());
                     });
 
-                    player.sendMessage(plugin.getMessage(Messages.SENDER_INVITED_JOINED.get()));
+                    Messages.SENDER_INVITED_JOINED.send(player);
                 })
                 .register();
     }
