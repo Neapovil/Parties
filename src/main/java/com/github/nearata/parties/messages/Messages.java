@@ -51,7 +51,9 @@ public enum Messages
     SENDER_DEMOTED("sender_demoted"),
     SENDER_PARTY_LIST_LEADER("sender_party_list_leader"),
     SENDER_PARTY_LIST_MODS("sender_party_list_mods"),
-    SENDER_PARTY_LIST_MEMBERS("sender_party_list_members");
+    SENDER_PARTY_LIST_MEMBERS("sender_party_list_members"),
+    SENDER_CANNOT_GOT_SELF("sender_cannot_goto_self"),
+    PLAYER_GOTO_MESSAGE("player_goto_message");
 
     private final Parties plugin = Parties.getInstance();
     private final String path;

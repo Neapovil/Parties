@@ -11,6 +11,7 @@ import com.github.nearata.parties.command.AcceptCommand;
 import com.github.nearata.parties.command.ChatCommand;
 import com.github.nearata.parties.command.CreateCommand;
 import com.github.nearata.parties.command.DisbandCommand;
+import com.github.nearata.parties.command.GotoCommand;
 import com.github.nearata.parties.command.InviteCommand;
 import com.github.nearata.parties.command.KickCommand;
 import com.github.nearata.parties.command.LeaveCommand;
@@ -18,6 +19,7 @@ import com.github.nearata.parties.command.ListCommand;
 import com.github.nearata.parties.command.PromoteCommand;
 import com.github.nearata.parties.listener.Listener;
 import com.github.nearata.parties.manager.Manager;
+import com.github.nearata.parties.runnable.GotoRunnable;
 import com.github.nearata.parties.runnable.PartyInviteRunnable;
 
 public final class Parties extends JavaPlugin
@@ -43,6 +45,7 @@ public final class Parties extends JavaPlugin
         this.getServer().getPluginManager().registerEvents(new Listener(), this);
 
         new PartyInviteRunnable().runTaskTimer(this, 0, 20);
+        new GotoRunnable().runTaskTimer(this, 0, 20);
 
         CreateCommand.register();
         DisbandCommand.register();
@@ -53,6 +56,7 @@ public final class Parties extends JavaPlugin
         KickCommand.register();
         ChatCommand.register();
         PromoteCommand.register();
+        GotoCommand.register();
     }
 
     @Override
