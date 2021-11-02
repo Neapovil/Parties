@@ -17,7 +17,7 @@ import com.github.nearata.parties.command.KickCommand;
 import com.github.nearata.parties.command.LeaveCommand;
 import com.github.nearata.parties.command.ListCommand;
 import com.github.nearata.parties.command.PromoteCommand;
-import com.github.nearata.parties.command.SetCommand;
+import com.github.nearata.parties.command.ModifyCommand;
 import com.github.nearata.parties.listener.Listener;
 import com.github.nearata.parties.manager.Manager;
 import com.github.nearata.parties.runnable.GotoRunnable;
@@ -58,7 +58,7 @@ public final class Parties extends JavaPlugin
         ChatCommand.register();
         PromoteCommand.register();
         GotoCommand.register();
-        SetCommand.register();
+        ModifyCommand.register();
     }
 
     @Override
