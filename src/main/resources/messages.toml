@@ -46,3 +46,6 @@ party_rank_leader = "Leader"
 party_rank_mod = "Mod"
 sender_cannot_goto_self = "You can't go to you!"
 player_goto_message = "Player: %s Distance: %s"
+party_allow_friendly_fire_enabled = "Friendly fire enabled!"
+party_allow_friendly_fire_disabled = "Friendly fire disabled!"
+

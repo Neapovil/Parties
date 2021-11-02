@@ -53,7 +53,9 @@ public enum Messages
     SENDER_PARTY_LIST_MODS("sender_party_list_mods"),
     SENDER_PARTY_LIST_MEMBERS("sender_party_list_members"),
     SENDER_CANNOT_GOT_SELF("sender_cannot_goto_self"),
-    PLAYER_GOTO_MESSAGE("player_goto_message");
+    PLAYER_GOTO_MESSAGE("player_goto_message"),
+    PARTY_ALLOW_FRIENDLY_FIRE_ENABLED("party_allow_friendly_fire_enabled"),
+    PARTY_ALLOW_FRIENDLY_FIRE_DISABLED("party_allow_friendly_fire_disabled");
 
     private final Parties plugin = Parties.getInstance();
     private final String path;
