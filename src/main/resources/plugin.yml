@@ -5,3 +5,26 @@ api-version: 1.13
 author: Nearata
 depend:
   - CommandAPI
+permissions:
+  parties.command.accept:
+    default: true
+  parties.command.chat:
+    default: true
+  parties.command.create:
+    default: true
+  parties.command.disband:
+    default: true
+  parties.command.goto:
+    default: true
+  parties.command.invite:
+    default: true
+  parties.command.kick:
+    default: true
+  parties.command.leave:
+    default: true
+  parties.command.list:
+    default: true
+  parties.command.modify:
+    default: true
+  parties.command.promote:
+    default: true
