@@ -1,8 +1,8 @@
-package com.github.nearata.parties.messages;
+package com.github.neapovil.parties.messages;
 
 import org.bukkit.entity.Player;
 
-import com.github.nearata.parties.Parties;
+import com.github.neapovil.parties.Parties;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;

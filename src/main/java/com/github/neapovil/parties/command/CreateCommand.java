@@ -1,13 +1,13 @@
-package com.github.nearata.parties.command;
+package com.github.neapovil.parties.command;
 
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.scoreboard.Team;
 
-import com.github.nearata.parties.Parties;
-import com.github.nearata.parties.messages.Messages;
-import com.github.nearata.parties.util.Util;
+import com.github.neapovil.parties.Parties;
+import com.github.neapovil.parties.messages.Messages;
+import com.github.neapovil.parties.util.Util;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;

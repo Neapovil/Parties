@@ -1,4 +1,4 @@
-package com.github.nearata.parties.object;
+package com.github.neapovil.parties.object;
 
 import java.time.Instant;
 import java.util.UUID;

@@ -1,10 +1,10 @@
-package com.github.nearata.parties.runnable;
+package com.github.neapovil.parties.runnable;
 
 import java.time.Instant;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.nearata.parties.Parties;
+import com.github.neapovil.parties.Parties;
 
 public final class PartyInviteRunnable extends BukkitRunnable
 {

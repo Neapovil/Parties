@@ -1,14 +1,13 @@
 plugins {
   id 'java-library'
-	id 'eclipse'
 	id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
-
 version = '1.17.1'
-group = 'com.github.nearata.parties'
+group = 'com.github.neapovil.parties'
 compileJava.options.encoding = 'UTF-8'
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 repositories {
   maven { url 'https://papermc.io/repo/repository/maven-public/' }
@@ -26,14 +25,9 @@ dependencies {
 	implementation group: 'com.electronwill.night-config', name:'toml', version: '3.6.0'
 }
 
-java {
-  withJavadocJar()
-  withSourcesJar()
-}
-
 shadowJar {
   classifier ''
-  relocate 'com.electronwill.nightconfig', 'com.github.nearata.parties.nightconfig'
+  relocate 'com.electronwill.nightconfig', 'com.github.neapovil.parties.nightconfig'
 }
 
 build.dependsOn shadowJar

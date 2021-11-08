@@ -1,10 +1,10 @@
-package com.github.nearata.parties.runnable;
+package com.github.neapovil.parties.runnable;
 
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.nearata.parties.Parties;
-import com.github.nearata.parties.messages.Messages;
+import com.github.neapovil.parties.Parties;
+import com.github.neapovil.parties.messages.Messages;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;

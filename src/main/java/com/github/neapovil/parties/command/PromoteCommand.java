@@ -1,4 +1,4 @@
-package com.github.nearata.parties.command;
+package com.github.neapovil.parties.command;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,10 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import com.github.nearata.parties.Parties;
-import com.github.nearata.parties.messages.Messages;
-import com.github.nearata.parties.util.Util;
-import com.github.nearata.parties.util.Util.PartyRank;
+import com.github.neapovil.parties.Parties;
+import com.github.neapovil.parties.messages.Messages;
+import com.github.neapovil.parties.util.Util;
+import com.github.neapovil.parties.util.Util.PartyRank;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;

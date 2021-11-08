@@ -1,4 +1,4 @@
-package com.github.nearata.parties.util;
+package com.github.neapovil.parties.util;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import com.github.nearata.parties.Parties;
+import com.github.neapovil.parties.Parties;
 
 public final class Util
 {

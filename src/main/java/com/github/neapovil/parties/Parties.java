@@ -1,4 +1,4 @@
-package com.github.nearata.parties;
+package com.github.neapovil.parties;
 
 import java.io.File;
 
@@ -7,21 +7,21 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.electronwill.nightconfig.core.file.FileConfig;
-import com.github.nearata.parties.command.AcceptCommand;
-import com.github.nearata.parties.command.ChatCommand;
-import com.github.nearata.parties.command.CreateCommand;
-import com.github.nearata.parties.command.DisbandCommand;
-import com.github.nearata.parties.command.GotoCommand;
-import com.github.nearata.parties.command.InviteCommand;
-import com.github.nearata.parties.command.KickCommand;
-import com.github.nearata.parties.command.LeaveCommand;
-import com.github.nearata.parties.command.ListCommand;
-import com.github.nearata.parties.command.PromoteCommand;
-import com.github.nearata.parties.command.ModifyCommand;
-import com.github.nearata.parties.listener.Listener;
-import com.github.nearata.parties.manager.Manager;
-import com.github.nearata.parties.runnable.GotoRunnable;
-import com.github.nearata.parties.runnable.PartyInviteRunnable;
+import com.github.neapovil.parties.command.AcceptCommand;
+import com.github.neapovil.parties.command.ChatCommand;
+import com.github.neapovil.parties.command.CreateCommand;
+import com.github.neapovil.parties.command.DisbandCommand;
+import com.github.neapovil.parties.command.GotoCommand;
+import com.github.neapovil.parties.command.InviteCommand;
+import com.github.neapovil.parties.command.KickCommand;
+import com.github.neapovil.parties.command.LeaveCommand;
+import com.github.neapovil.parties.command.ListCommand;
+import com.github.neapovil.parties.command.ModifyCommand;
+import com.github.neapovil.parties.command.PromoteCommand;
+import com.github.neapovil.parties.listener.Listener;
+import com.github.neapovil.parties.manager.Manager;
+import com.github.neapovil.parties.runnable.GotoRunnable;
+import com.github.neapovil.parties.runnable.PartyInviteRunnable;
 
 public final class Parties extends JavaPlugin
 {

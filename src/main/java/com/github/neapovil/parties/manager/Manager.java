@@ -1,10 +1,10 @@
-package com.github.nearata.parties.manager;
+package com.github.neapovil.parties.manager;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import com.github.nearata.parties.object.PartyInvite;
+import com.github.neapovil.parties.object.PartyInvite;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
