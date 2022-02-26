@@ -36,9 +36,7 @@ public final class GotoRunnable extends BukkitRunnable
                 return true;
             }
 
-            final boolean check2 = player.getLocation().distanceSquared(player1.getLocation()) <= 120;
-
-            if (check2)
+            if (player.getLocation().distanceSquared(player1.getLocation()) <= 120)
             {
                 return true;
             }
