@@ -12,6 +12,7 @@ import com.github.neapovil.parties.util.Util;
 import com.github.neapovil.parties.util.Util.PartyRank;
 
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 
@@ -25,18 +26,18 @@ public final class PromoteCommand
         new CommandAPICommand("party")
                 .withPermission("parties.command.promote")
                 .withArguments(new MultiLiteralArgument("promote", "demote"))
-                .withArguments(new StringArgument("player").replaceSuggestions(info -> {
+                .withArguments(new StringArgument("player").replaceSuggestions(ArgumentSuggestions.strings(info -> {
                     final Player player = (Player) info.sender();
                     return Util.getMembers(player).stream().filter(s -> !s.startsWith(player.getName())).toArray(String[]::new);
-                }))
-                .withArguments(new StringArgument("rank").replaceSuggestions(info -> {
+                })))
+                .withArguments(new StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings(info -> {
                     if (info.previousArgs()[0].equals("promote"))
                     {
                         return ranks.toArray(String[]::new);
                     }
 
                     return new String[] { "member" };
-                }))
+                })))
                 .executesPlayer((player, args) -> {
                     final String command = (String) args[0];
                     final String player1name = (String) args[1];

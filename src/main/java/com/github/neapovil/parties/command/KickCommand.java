@@ -9,6 +9,7 @@ import com.github.neapovil.parties.util.Util;
 import com.github.neapovil.parties.util.Util.PartyRank;
 
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 
@@ -21,10 +22,10 @@ public final class KickCommand
         new CommandAPICommand("party")
                 .withPermission("parties.command.kick")
                 .withArguments(new LiteralArgument("kick"))
-                .withArguments(new StringArgument("player").replaceSuggestions(info -> {
+                .withArguments(new StringArgument("player").replaceSuggestions(ArgumentSuggestions.strings(info -> {
                     final Player player = (Player) info.sender();
                     return Util.getMembers(player).stream().filter(s -> !s.startsWith(player.getName())).toArray(String[]::new);
-                }))
+                })))
                 .executesPlayer((player, args) -> {
                     final String playername = (String) args[0];
 

@@ -9,6 +9,7 @@ import com.github.neapovil.parties.messages.Messages;
 import com.github.neapovil.parties.util.Util;
 
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 
@@ -21,15 +22,15 @@ public final class AcceptCommand
         new CommandAPICommand("party")
                 .withPermission("parties.command.accept")
                 .withArguments(new LiteralArgument("accept"))
-                .withArguments(new StringArgument("player").replaceSuggestions(s -> {
+                .withArguments(new StringArgument("player").replaceSuggestions(ArgumentSuggestions.strings(info -> {
                     return plugin.getManager()
                             .getInvites()
                             .values()
                             .stream()
-                            .filter(i -> i.getUUID().equals(((Player) s.sender()).getUniqueId()))
+                            .filter(i -> i.getUUID().equals(((Player) info.sender()).getUniqueId()))
                             .map(i -> i.getIssuer())
                             .toArray(String[]::new);
-                }))
+                })))
                 .executesPlayer((player, args) -> {
                     if (Util.getParty(player).isPresent())
                     {

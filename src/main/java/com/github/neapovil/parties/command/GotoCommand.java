@@ -7,6 +7,7 @@ import com.github.neapovil.parties.messages.Messages;
 import com.github.neapovil.parties.util.Util;
 
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 
@@ -19,14 +20,14 @@ public final class GotoCommand
         new CommandAPICommand("party")
                 .withPermission("parties.command.goto")
                 .withArguments(new LiteralArgument("goto"))
-                .withArguments(new StringArgument("player").replaceSuggestions(info -> {
+                .withArguments(new StringArgument("player").replaceSuggestions(ArgumentSuggestions.strings(info -> {
                     final Player player = (Player) info.sender();
                     return Util.getOnlineMembers(player)
                             .stream()
                             .filter(p -> !p.getName().equals(player.getName()))
                             .map(p -> p.getName())
                             .toArray(String[]::new);
-                }))
+                })))
                 .executesPlayer((player, args) -> {
                     final String playername = (String) args[0];
                     final Player player1 = plugin.getServer().getPlayer(playername);

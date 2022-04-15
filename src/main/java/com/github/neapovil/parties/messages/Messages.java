@@ -80,6 +80,6 @@ public enum Messages
 
     public void fail() throws WrapperCommandSyntaxException
     {
-        CommandAPI.fail(plugin.getMessage(this.get()));
+        throw CommandAPI.fail(plugin.getMessage(this.get()));
     }
 }
