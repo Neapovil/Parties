@@ -9,7 +9,7 @@ import com.github.neapovil.parties.util.Util;
 
 public final class Listener implements org.bukkit.event.Listener
 {
-    private final Parties plugin = Parties.getInstance();
+    private final Parties plugin = Parties.instance();
 
     @EventHandler
     public void playerJoin(PlayerJoinEvent event)
@@ -18,7 +18,7 @@ public final class Listener implements org.bukkit.event.Listener
 
         if (Util.getParty(player).isEmpty())
         {
-            player.getPersistentDataContainer().remove(plugin.getKey());
+            player.getPersistentDataContainer().remove(plugin.partyIdKey);
         }
     }
 }

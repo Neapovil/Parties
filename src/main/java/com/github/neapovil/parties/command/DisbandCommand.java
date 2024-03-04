@@ -1,54 +1,49 @@
 package com.github.neapovil.parties.command;
 
+import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scoreboard.Team;
 
 import com.github.neapovil.parties.Parties;
-import com.github.neapovil.parties.messages.Messages;
 import com.github.neapovil.parties.util.Util;
 import com.github.neapovil.parties.util.Util.PartyRank;
 
+import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 
-public final class DisbandCommand
+public final class DisbandCommand implements ICommand
 {
-    private static final Parties plugin = Parties.getInstance();
+    private final Parties plugin = Parties.instance();
 
-    public static void register()
+    public void register()
     {
         new CommandAPICommand("party")
                 .withPermission("parties.command.disband")
-                .withArguments(new LiteralArgument("disband"))
+                .withArguments(new LiteralArgument("disband").withRequirement(sender -> {
+                    return Util.getRank((Player) sender).equals(PartyRank.LEADER);
+                }))
                 .executesPlayer((player, args) -> {
-                    if (Util.getParty(player).isEmpty())
-                    {
-                        Messages.NO_PARTY.fail();
-                    }
-
                     final PersistentDataContainer data = player.getPersistentDataContainer();
-                    final String partyid = data.get(plugin.getKey(), plugin.getKeyType());
+                    final String partyid = data.get(plugin.partyIdKey, PersistentDataType.STRING);
                     final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
 
-                    if (!Util.getRank(player).equals(PartyRank.LEADER))
-                    {
-                        Messages.SENDER_CANNOT_DISBAND.fail();
-                    }
-
-                    Util.getOnlineMembers(player).forEach(p -> {
-                        if (p.getName().equals(player.getName()))
+                    Util.getOnlineMembers(player).forEach(i -> {
+                        if (!i.getName().equals(player.getName()))
                         {
-                            return;
+                            i.getPersistentDataContainer().remove(plugin.partyIdKey);
+                            i.sendMessage("The party has been disbanded");
+                            CommandAPI.updateRequirements(i);
                         }
-
-                        p.getPersistentDataContainer().remove(plugin.getKey());
-                        Messages.PARTY_DISBANDED.send(p);
                     });
 
-                    data.remove(plugin.getKey());
+                    data.remove(plugin.partyIdKey);
                     team.unregister();
 
-                    Messages.SENDER_DISBANDED.send(player);
+                    player.sendMessage("You disbanded the party");
+
+                    CommandAPI.updateRequirements(player);
                 })
                 .register();
     }

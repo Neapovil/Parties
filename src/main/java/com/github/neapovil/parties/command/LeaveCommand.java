@@ -1,49 +1,44 @@
 package com.github.neapovil.parties.command;
 
+import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import com.github.neapovil.parties.Parties;
-import com.github.neapovil.parties.messages.Messages;
 import com.github.neapovil.parties.util.Util;
 import com.github.neapovil.parties.util.Util.PartyRank;
 
+import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 
-public final class LeaveCommand
+public final class LeaveCommand implements ICommand
 {
-    private static final Parties plugin = Parties.getInstance();
+    private final Parties plugin = Parties.instance();
 
-    public static void register()
+    public void register()
     {
         new CommandAPICommand("party")
                 .withPermission("parties.command.leave")
-                .withArguments(new LiteralArgument("leave"))
+                .withArguments(new LiteralArgument("leave").withRequirement(sender -> {
+                    return Util.getParty((Player) sender).isPresent() && !Util.getRank((Player) sender).equals(PartyRank.LEADER);
+                }))
                 .executesPlayer((player, args) -> {
-                    if (Util.getParty(player).isEmpty())
-                    {
-                        Messages.NO_PARTY.fail();
-                    }
-
                     final Team team = Util.getParty(player).get();
-                    if (Util.getRank(player).equals(PartyRank.LEADER))
-                    {
-                        Messages.SENDER_CANNOT_LEAVE_LEADER.fail();
-                    }
 
-                    Util.getOnlineMembers(player).forEach(p -> {
-                        if (p.getName().equals(player.getName()))
+                    Util.getOnlineMembers(player).forEach(i -> {
+                        if (!i.getName().equals(player.getName()))
                         {
-                            return;
+                            i.sendRichMessage("<red>%s left the party".formatted(player.getName()));
                         }
-
-                        Messages.PARTY_PLAYER_LEFT.send(p, player.getName());
                     });
 
-                    player.getPersistentDataContainer().remove(plugin.getKey());
+                    player.getPersistentDataContainer().remove(plugin.partyIdKey);
                     team.removeEntry(player.getName());
+                    team.removeEntry("mod-" + player.getName());
 
-                    Messages.SENDER_PARTY_LEFT.send(player);
+                    player.sendRichMessage("<red>You left the party");
+
+                    CommandAPI.updateRequirements(player);
                 })
                 .register();
     }

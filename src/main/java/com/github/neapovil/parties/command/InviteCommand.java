@@ -1,12 +1,13 @@
 package com.github.neapovil.parties.command;
 
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import com.github.neapovil.parties.Parties;
-import com.github.neapovil.parties.messages.Messages;
 import com.github.neapovil.parties.object.PartyInvite;
 import com.github.neapovil.parties.util.Util;
 import com.github.neapovil.parties.util.Util.PartyRank;
@@ -14,54 +15,61 @@ import com.github.neapovil.parties.util.Util.PartyRank;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.PlayerArgument;
+import dev.jorel.commandapi.arguments.SafeSuggestions;
 
-public final class InviteCommand
+public final class InviteCommand implements ICommand
 {
-    private static final Parties plugin = Parties.getInstance();
+    private final Parties plugin = Parties.instance();
 
-    public static void register()
+    public void register()
     {
         new CommandAPICommand("party")
                 .withPermission("parties.command.invite")
-                .withArguments(new LiteralArgument("invite"))
-                .withArguments(new PlayerArgument("player"))
+                .withArguments(new LiteralArgument("invite").withRequirement(sender -> {
+                    final PartyRank partyrank = Util.getRank((Player) sender);
+                    return partyrank.equals(PartyRank.LEADER) || partyrank.equals(PartyRank.MOD);
+                }))
+                .withArguments(new PlayerArgument("player").replaceSafeSuggestions(SafeSuggestions.suggest(info -> {
+                    final Player player = (Player) info.sender();
+                    final Team team = Util.getParty(player).get();
+                    final Predicate<Player> predicateinvited = (i) -> {
+                        return plugin.getManager()
+                                .getInvites()
+                                .get(team.getName())
+                                .stream()
+                                .noneMatch(i1 -> i1.getUUID().equals(i.getUniqueId()));
+                    };
+                    return Stream.of(plugin.getServer().getOnlinePlayers().toArray(Player[]::new))
+                            .filter(i -> !i.getUniqueId().equals(player.getUniqueId()))
+                            .filter(i -> Util.getParty(i).isEmpty())
+                            .filter(predicateinvited)
+                            .toArray(Player[]::new);
+                })))
                 .executesPlayer((player, args) -> {
-                    final UUID uuid = player.getUniqueId();
-
-                    if (Util.getParty(player).isEmpty())
-                    {
-                        Messages.NO_PARTY.fail();
-                    }
+                    final Player player1 = (Player) args.get("player");
 
                     final Team team = Util.getParty(player).get();
-
-                    if (!(Util.getRank(player).equals(PartyRank.MOD) || Util.getRank(player).equals(PartyRank.LEADER)))
-                    {
-                        Messages.SENDER_NO_PERMISSIONS.fail();
-                    }
-
-                    final Player player1 = (Player) args[0];
                     final UUID uuid1 = player1.getUniqueId();
 
-                    if (uuid.equals(uuid1))
+                    if (player.getUniqueId().equals(uuid1))
                     {
-                        Messages.SENDER_CANNOT_SELF_INVITED.fail();
+                        return;
                     }
 
                     if (Util.getParty(player1).isPresent())
                     {
-                        Messages.SENDER_INVITED_PLAYER_HAS_PARTY.fail();
+                        return;
                     }
 
                     if (plugin.getManager().getInvites().get(team.getName()).stream().anyMatch(i -> i.getUUID().equals(uuid1)))
                     {
-                        Messages.SENDER_PLAYER_ALREADY_INVITED.fail();
+                        return;
                     }
 
                     plugin.getManager().getInvites().put(team.getName(), new PartyInvite(player.getName(), uuid1));
 
-                    Messages.SENDER_PLAYER_INVITED.send(player, player1.getName());
-                    Messages.PLAYER_INVITED.send(player1, player.getName());
+                    player.sendMessage("You invited %s to join your party".formatted(player1.getName()));
+                    player1.sendMessage("%s invited you to join their party".formatted(player.getName()));
                 })
                 .register();
     }

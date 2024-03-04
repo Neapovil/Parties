@@ -3,26 +3,29 @@ package com.github.neapovil.parties.command;
 import java.util.Optional;
 
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 
 import com.github.neapovil.parties.Parties;
-import com.github.neapovil.parties.messages.Messages;
 import com.github.neapovil.parties.util.Util;
 
+import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 
-public final class AcceptCommand
+public final class AcceptCommand implements ICommand
 {
-    private static final Parties plugin = Parties.getInstance();
+    private final Parties plugin = Parties.instance();
 
-    public static void register()
+    public void register()
     {
         new CommandAPICommand("party")
                 .withPermission("parties.command.accept")
-                .withArguments(new LiteralArgument("accept"))
-                .withArguments(new StringArgument("player").replaceSuggestions(ArgumentSuggestions.strings(info -> {
+                .withArguments(new LiteralArgument("accept").withRequirement(sender -> {
+                    return Util.getParty((Player) sender).isEmpty();
+                }))
+                .withArguments(new StringArgument("playerName").replaceSuggestions(ArgumentSuggestions.strings(info -> {
                     return plugin.getManager()
                             .getInvites()
                             .values()
@@ -32,12 +35,12 @@ public final class AcceptCommand
                             .toArray(String[]::new);
                 })))
                 .executesPlayer((player, args) -> {
+                    final String issuer = (String) args.get("playerName");
+
                     if (Util.getParty(player).isPresent())
                     {
-                        Messages.HAS_PARTY.fail();
+                        return;
                     }
-
-                    final String issuer = (String) args[0];
 
                     final Optional<String> partyid = plugin.getManager()
                             .getInvites()
@@ -52,7 +55,7 @@ public final class AcceptCommand
 
                     if (partyid.isEmpty())
                     {
-                        Messages.SENDER_INVITED_EXPIRED.fail();
+                        throw CommandAPI.failWithString("The invite has expired");
                     }
 
                     plugin.getManager()
@@ -64,18 +67,18 @@ public final class AcceptCommand
                             });
 
                     plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid.get()).addEntry(player.getName());
-                    player.getPersistentDataContainer().set(plugin.getKey(), plugin.getKeyType(), partyid.get());
+                    player.getPersistentDataContainer().set(plugin.partyIdKey, PersistentDataType.STRING, partyid.get());
 
-                    Util.getOnlineMembers(player).forEach(p -> {
-                        if (p.getName().equals(player.getName()))
+                    Util.getOnlineMembers(player).forEach(i -> {
+                        if (!i.getName().equals(player.getName()))
                         {
-                            return;
+                            i.sendMessage("%s joined the party".formatted(player.getName()));
                         }
-
-                        Messages.PARTY_INVITED_JOINED.send(p, player.getName());
                     });
 
-                    Messages.SENDER_INVITED_JOINED.send(player);
+                    player.sendMessage("You joined the party");
+
+                    CommandAPI.updateRequirements(player);
                 })
                 .register();
     }

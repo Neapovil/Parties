@@ -3,53 +3,42 @@ package com.github.neapovil.parties.command;
 import org.bukkit.entity.Player;
 
 import com.github.neapovil.parties.Parties;
-import com.github.neapovil.parties.messages.Messages;
 import com.github.neapovil.parties.util.Util;
 
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.LiteralArgument;
-import dev.jorel.commandapi.arguments.StringArgument;
+import dev.jorel.commandapi.arguments.PlayerArgument;
+import dev.jorel.commandapi.arguments.SafeSuggestions;
 
-public final class GotoCommand
+public final class GotoCommand implements ICommand
 {
-    private static final Parties plugin = Parties.getInstance();
+    private final Parties plugin = Parties.instance();
 
-    public static void register()
+    public void register()
     {
         new CommandAPICommand("party")
                 .withPermission("parties.command.goto")
-                .withArguments(new LiteralArgument("goto"))
-                .withArguments(new StringArgument("player").replaceSuggestions(ArgumentSuggestions.strings(info -> {
+                .withArguments(new LiteralArgument("goto").withRequirement(sender -> {
+                    return Util.getParty((Player) sender).isPresent();
+                }))
+                .withArguments(new PlayerArgument("player").replaceSafeSuggestions(SafeSuggestions.suggest(info -> {
                     final Player player = (Player) info.sender();
                     return Util.getOnlineMembers(player)
                             .stream()
-                            .filter(p -> !p.getName().equals(player.getName()))
-                            .map(p -> p.getName())
-                            .toArray(String[]::new);
+                            .filter(i -> !i.getName().equals(player.getName()))
+                            .toArray(Player[]::new);
                 })))
                 .executesPlayer((player, args) -> {
-                    final String playername = (String) args[0];
-                    final Player player1 = plugin.getServer().getPlayer(playername);
+                    final Player player1 = (Player) args.get("player");
 
-                    if (Util.getParty(player).isEmpty())
+                    if (player.getUniqueId().equals(player1.getUniqueId()))
                     {
-                        Messages.NO_PARTY.fail();
+                        return;
                     }
 
-                    if (player1 == null)
+                    if (!Util.getMembers(player).contains(player1.getName()))
                     {
-                        Messages.SENDER_PLAYER_NOT_FOUND.fail();
-                    }
-
-                    if (player.getName().equals(playername))
-                    {
-                        Messages.SENDER_CANNOT_GOT_SELF.fail();
-                    }
-
-                    if (!Util.getMembers(player).contains(playername))
-                    {
-                        Messages.SENDER_PLAYER_NOT_IN_PARTY.fail();
+                        return;
                     }
 
                     plugin.getManager().getGoto().put(player.getUniqueId(), player1.getUniqueId());

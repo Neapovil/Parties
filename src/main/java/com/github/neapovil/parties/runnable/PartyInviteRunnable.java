@@ -8,7 +8,7 @@ import com.github.neapovil.parties.Parties;
 
 public final class PartyInviteRunnable extends BukkitRunnable
 {
-    private final Parties plugin = Parties.getInstance();
+    private final Parties plugin = Parties.instance();
 
     @Override
     public void run()

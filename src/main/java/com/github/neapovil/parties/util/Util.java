@@ -6,13 +6,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scoreboard.Team;
 
 import com.github.neapovil.parties.Parties;
 
 public final class Util
 {
-    private static final Parties plugin = Parties.getInstance();
+    private static final Parties plugin = Parties.instance();
 
     public static Set<String> getMembers(Player player)
     {
@@ -41,7 +42,7 @@ public final class Util
 
     public static Optional<Team> getParty(Player player)
     {
-        final String partyid = player.getPersistentDataContainer().get(plugin.getKey(), plugin.getKeyType());
+        final String partyid = player.getPersistentDataContainer().get(plugin.partyIdKey, PersistentDataType.STRING);
 
         if (partyid == null)
         {
@@ -87,10 +88,7 @@ public final class Util
 
     public static enum PartyRank
     {
-        LEADER("messages.party_rank_leader"),
-        MOD("messages.party_rank_mod"),
-        MEMBER(""),
-        NONE("");
+        LEADER("Leader"), MOD("Mod"), MEMBER(""), NONE("");
 
         private final String title;
 
@@ -99,7 +97,7 @@ public final class Util
             this.title = title;
         }
 
-        public String get()
+        public String title()
         {
             return this.title;
         }

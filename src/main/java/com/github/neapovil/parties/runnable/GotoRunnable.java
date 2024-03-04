@@ -4,14 +4,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.neapovil.parties.Parties;
-import com.github.neapovil.parties.messages.Messages;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
 
 public final class GotoRunnable extends BukkitRunnable
 {
-    private final Parties plugin = Parties.getInstance();
+    private final Parties plugin = Parties.instance();
 
     @Override
     public void run()
@@ -48,9 +46,9 @@ public final class GotoRunnable extends BukkitRunnable
             final Player player = plugin.getServer().getPlayer(id);
             final Player player1 = plugin.getServer().getPlayer(id1);
             final int distance = (int) player.getLocation().distanceSquared(player1.getLocation());
-            final String message = plugin.getMessage(Messages.PLAYER_GOTO_MESSAGE.get()).formatted(player1.getName(), distance);
+            final String message = "Player: %s Distance: %s".formatted(player1.getName(), distance);
 
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
+            player.sendActionBar(Component.text(message));
         });
     }
 }

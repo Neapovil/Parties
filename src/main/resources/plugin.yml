@@ -1,8 +1,9 @@
 name: Parties
 main: com.github.neapovil.parties.Parties
 version: 1.0.0
-api-version: 1.13
+api-version: 1.19
 author: Nearata
+website: https://github.com/Neapovil/parties
 depend:
   - CommandAPI
 permissions:
