@@ -2,30 +2,25 @@ package com.github.neapovil.parties.command;
 
 import org.bukkit.entity.Player;
 
-import com.github.neapovil.parties.Parties;
-import com.github.neapovil.parties.util.Util;
-
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.jorel.commandapi.arguments.SafeSuggestions;
 
-public final class GotoCommand implements ICommand
+public final class GotoCommand extends AbstractCommand
 {
-    private final Parties plugin = Parties.instance();
-
     public void register()
     {
         new CommandAPICommand("party")
                 .withPermission("parties.command.goto")
                 .withArguments(new LiteralArgument("goto").withRequirement(sender -> {
-                    return Util.getParty((Player) sender).isPresent();
+                    return plugin.findParty((Player) sender).isPresent();
                 }))
                 .withArguments(new PlayerArgument("player").replaceSafeSuggestions(SafeSuggestions.suggest(info -> {
                     final Player player = (Player) info.sender();
-                    return Util.getOnlineMembers(player)
+                    return plugin.findParty(player).get().onlineMembers()
                             .stream()
-                            .filter(i -> !i.getName().equals(player.getName()))
+                            .filter(i -> !i.getUniqueId().equals(player.getUniqueId()))
                             .toArray(Player[]::new);
                 })))
                 .executesPlayer((player, args) -> {
@@ -36,12 +31,12 @@ public final class GotoCommand implements ICommand
                         return;
                     }
 
-                    if (!Util.getMembers(player).contains(player1.getName()))
-                    {
-                        return;
-                    }
-
-                    plugin.getManager().getGoto().put(player.getUniqueId(), player1.getUniqueId());
+                    plugin.findParty(player).ifPresent(party -> {
+                        if (party.onlineMembers().stream().anyMatch(i -> i.getUniqueId().equals(player1.getUniqueId())))
+                        {
+                            plugin.partyGoto.put(player.getUniqueId(), player1.getUniqueId());
+                        }
+                    });
                 })
                 .register();
     }

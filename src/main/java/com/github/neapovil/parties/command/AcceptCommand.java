@@ -3,10 +3,10 @@ package com.github.neapovil.parties.command;
 import java.util.Optional;
 
 import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataType;
 
 import com.github.neapovil.parties.Parties;
-import com.github.neapovil.parties.util.Util;
+import com.github.neapovil.parties.resource.PartiesResource;
+import com.github.neapovil.parties.runnable.SaveRunnable;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -14,71 +14,55 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 
-public final class AcceptCommand implements ICommand
+public final class AcceptCommand extends AbstractCommand
 {
-    private final Parties plugin = Parties.instance();
-
     public void register()
     {
         new CommandAPICommand("party")
                 .withPermission("parties.command.accept")
                 .withArguments(new LiteralArgument("accept").withRequirement(sender -> {
-                    return Util.getParty((Player) sender).isEmpty();
+                    return plugin.findParty((Player) sender).isEmpty();
                 }))
-                .withArguments(new StringArgument("playerName").replaceSuggestions(ArgumentSuggestions.strings(info -> {
-                    return plugin.getManager()
-                            .getInvites()
-                            .values()
+                .withArguments(new StringArgument("leaderName").replaceSuggestions(ArgumentSuggestions.strings(info -> {
+                    final Player player = (Player) info.sender();
+                    return plugin.invites.get(player.getUniqueId())
                             .stream()
-                            .filter(i -> i.getUUID().equals(((Player) info.sender()).getUniqueId()))
-                            .map(i -> i.getIssuer())
+                            .map(i -> i.leaderName)
                             .toArray(String[]::new);
                 })))
                 .executesPlayer((player, args) -> {
-                    final String issuer = (String) args.get("playerName");
+                    final String leadername = (String) args.get("leaderName");
 
-                    if (Util.getParty(player).isPresent())
+                    if (plugin.findParty(player).isPresent())
                     {
                         return;
                     }
 
-                    final Optional<String> partyid = plugin.getManager()
-                            .getInvites()
-                            .entries()
+                    final Optional<PartiesResource.Party> optionalparty = plugin.invites.get(player.getUniqueId())
                             .stream()
-                            .filter(e -> {
-                                return e.getValue().getIssuer().equals(issuer)
-                                        && e.getValue().getUUID().equals(player.getUniqueId());
-                            })
-                            .map(e -> e.getKey())
-                            .findAny();
+                            .filter(i -> i.leaderName.equalsIgnoreCase(leadername))
+                            .map(i -> i.party)
+                            .findFirst();
 
-                    if (partyid.isEmpty())
-                    {
-                        throw CommandAPI.failWithString("The invite has expired");
-                    }
+                    optionalparty.ifPresentOrElse((party) -> {
+                        plugin.invites.get(player.getUniqueId()).removeIf(i -> i.leaderName.equalsIgnoreCase(leadername));
 
-                    plugin.getManager()
-                            .getInvites()
-                            .values()
-                            .removeIf(i -> {
-                                return i.getIssuer().equals(issuer)
-                                        && i.getUUID().equals(player.getUniqueId());
-                            });
+                        party.add(player);
+                        player.getPersistentDataContainer().set(plugin.partyIdKey, Parties.UUID_DATA_TYPE, party.uuid);
 
-                    plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid.get()).addEntry(player.getName());
-                    player.getPersistentDataContainer().set(plugin.partyIdKey, PersistentDataType.STRING, partyid.get());
+                        party.onlineMembers().forEach(i -> {
+                            if (!i.getName().equals(player.getName()))
+                            {
+                                i.sendMessage("%s joined the party".formatted(player.getName()));
+                            }
+                        });
 
-                    Util.getOnlineMembers(player).forEach(i -> {
-                        if (!i.getName().equals(player.getName()))
-                        {
-                            i.sendMessage("%s joined the party".formatted(player.getName()));
-                        }
-                    });
+                        player.sendMessage("You joined the party");
 
-                    player.sendMessage("You joined the party");
+                        CommandAPI.updateRequirements(player);
 
-                    CommandAPI.updateRequirements(player);
+                        new SaveRunnable().runTaskAsynchronously(plugin);
+                    }, () -> player.sendRichMessage("<red>The invite has expired"));
                 })
                 .register();
     }

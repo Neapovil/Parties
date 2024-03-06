@@ -1,18 +1,25 @@
 package com.github.neapovil.parties.runnable;
 
-import java.time.Instant;
+import java.io.IOException;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.neapovil.parties.Parties;
 
-public final class PartyInviteRunnable extends BukkitRunnable
+public final class SaveRunnable extends BukkitRunnable
 {
     private final Parties plugin = Parties.instance();
 
     @Override
     public void run()
     {
-        plugin.invites.values().removeIf(i -> Instant.now().isAfter(i.expire));
+        try
+        {
+            plugin.save();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,33 +1,18 @@
 package com.github.neapovil.parties.object;
 
 import java.time.Instant;
-import java.util.UUID;
 
-public final class PartyInvite
+import com.github.neapovil.parties.resource.PartiesResource;
+
+public class PartyInvite
 {
-    private final String issuer;
-    private final UUID uuid;
-    private final Instant time;
+    public final PartiesResource.Party party;
+    public final String leaderName;
+    public final Instant expire = Instant.now().plusSeconds(30);
 
-    public PartyInvite(String issuer, UUID uuid)
+    public PartyInvite(PartiesResource.Party party, String leaderName)
     {
-        this.issuer = issuer;
-        this.uuid = uuid;
-        this.time = Instant.now().plusSeconds(30);
-    }
-
-    public String getIssuer()
-    {
-        return this.issuer;
-    }
-
-    public UUID getUUID()
-    {
-        return this.uuid;
-    }
-
-    public Instant getTime()
-    {
-        return this.time;
+        this.party = party;
+        this.leaderName = leaderName;
     }
 }

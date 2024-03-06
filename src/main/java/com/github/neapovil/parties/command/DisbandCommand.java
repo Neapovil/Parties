@@ -1,49 +1,48 @@
 package com.github.neapovil.parties.command;
 
-import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scoreboard.Team;
+import java.util.Optional;
 
-import com.github.neapovil.parties.Parties;
-import com.github.neapovil.parties.util.Util;
-import com.github.neapovil.parties.util.Util.PartyRank;
+import org.bukkit.entity.Player;
+
+import com.github.neapovil.parties.resource.PartiesResource;
+import com.github.neapovil.parties.runnable.SaveRunnable;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 
-public final class DisbandCommand implements ICommand
+public final class DisbandCommand extends AbstractCommand
 {
-    private final Parties plugin = Parties.instance();
-
     public void register()
     {
         new CommandAPICommand("party")
                 .withPermission("parties.command.disband")
                 .withArguments(new LiteralArgument("disband").withRequirement(sender -> {
-                    return Util.getRank((Player) sender).equals(PartyRank.LEADER);
+                    final Player player = (Player) sender;
+                    final Optional<PartiesResource.Party.Member> optionalmember = plugin.findMember(player);
+                    return optionalmember.isPresent() && optionalmember.get().role.isLeader();
                 }))
                 .executesPlayer((player, args) -> {
-                    final PersistentDataContainer data = player.getPersistentDataContainer();
-                    final String partyid = data.get(plugin.partyIdKey, PersistentDataType.STRING);
-                    final Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeam(partyid);
+                    plugin.findParty(player).ifPresent(party -> {
+                        party.onlineMembers().forEach(i -> {
+                            if (!i.getUniqueId().equals(player.getUniqueId()))
+                            {
+                                i.getPersistentDataContainer().remove(plugin.partyIdKey);
+                                i.sendRichMessage("<red>The party has been disbanded");
+                                CommandAPI.updateRequirements(i);
+                            }
+                        });
 
-                    Util.getOnlineMembers(player).forEach(i -> {
-                        if (!i.getName().equals(player.getName()))
-                        {
-                            i.getPersistentDataContainer().remove(plugin.partyIdKey);
-                            i.sendMessage("The party has been disbanded");
-                            CommandAPI.updateRequirements(i);
-                        }
+                        party.team().unregister();
+                        plugin.partiesResource.parties.removeIf(i -> i.uuid.equals(party.uuid));
+                        player.getPersistentDataContainer().remove(plugin.partyIdKey);
+
+                        player.sendRichMessage("<red>You disbanded the party");
+
+                        CommandAPI.updateRequirements(player);
+
+                        new SaveRunnable().runTaskAsynchronously(plugin);
                     });
-
-                    data.remove(plugin.partyIdKey);
-                    team.unregister();
-
-                    player.sendMessage("You disbanded the party");
-
-                    CommandAPI.updateRequirements(player);
                 })
                 .register();
     }

@@ -5,18 +5,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.github.neapovil.parties.Parties;
-import com.github.neapovil.parties.util.Util;
 
 public final class Listener implements org.bukkit.event.Listener
 {
     private final Parties plugin = Parties.instance();
 
     @EventHandler
-    public void playerJoin(PlayerJoinEvent event)
+    private void playerJoin(PlayerJoinEvent event)
     {
         final Player player = event.getPlayer();
 
-        if (Util.getParty(player).isEmpty())
+        if (plugin.findMember(player).isEmpty())
         {
             player.getPersistentDataContainer().remove(plugin.partyIdKey);
         }

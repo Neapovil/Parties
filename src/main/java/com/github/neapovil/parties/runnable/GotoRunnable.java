@@ -14,7 +14,7 @@ public final class GotoRunnable extends BukkitRunnable
     @Override
     public void run()
     {
-        plugin.getManager().getGoto().entrySet().removeIf(e -> {
+        plugin.partyGoto.entrySet().removeIf(e -> {
             final Player player = plugin.getServer().getPlayer(e.getKey());
             final Player player1 = plugin.getServer().getPlayer(e.getValue());
 
@@ -34,7 +34,7 @@ public final class GotoRunnable extends BukkitRunnable
                 return true;
             }
 
-            if (player.getLocation().distanceSquared(player1.getLocation()) <= 120)
+            if (player.getLocation().distanceSquared(player1.getLocation()) <= 100)
             {
                 return true;
             }
@@ -42,7 +42,7 @@ public final class GotoRunnable extends BukkitRunnable
             return false;
         });
 
-        plugin.getManager().getGoto().forEach((id, id1) -> {
+        plugin.partyGoto.forEach((id, id1) -> {
             final Player player = plugin.getServer().getPlayer(id);
             final Player player1 = plugin.getServer().getPlayer(id1);
             final int distance = (int) player.getLocation().distanceSquared(player1.getLocation());

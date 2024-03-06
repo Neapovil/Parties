@@ -1,49 +1,51 @@
 package com.github.neapovil.parties.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Team;
 
-import com.github.neapovil.parties.util.Util;
+import com.github.neapovil.parties.resource.PartiesResource;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 
-public final class ListCommand implements ICommand
+public final class ListCommand extends AbstractCommand
 {
     public void register()
     {
         new CommandAPICommand("party")
                 .withPermission("parties.command.list")
                 .withArguments(new LiteralArgument("list").withRequirement(sender -> {
-                    return Util.getParty((Player) sender).isPresent();
+                    return plugin.findParty((Player) sender).isPresent();
                 }))
                 .executesPlayer((player, args) -> {
-                    final Team team = Util.getParty(player).get();
+                    plugin.findParty(player).ifPresent(party -> {
+                        String leader = "";
+                        final List<String> moderators = new ArrayList<>();
+                        final List<String> members = new ArrayList<>();
 
-                    final List<String> members = team.getEntries()
-                            .stream()
-                            .filter(i -> !i.startsWith("leader-"))
-                            .filter(i -> !i.startsWith("mod-"))
-                            .toList();
+                        for (PartiesResource.Party.Member i : party.members)
+                        {
+                            if (i.role.isLeader())
+                            {
+                                leader = i.username;
+                                continue;
+                            }
 
-                    final String leader = team.getEntries()
-                            .stream()
-                            .filter(i -> i.startsWith("leader-"))
-                            .map(i -> i.replace("leader-", ""))
-                            .findFirst()
-                            .get();
+                            if (i.role.isMod())
+                            {
+                                moderators.add(i.username);
+                                continue;
+                            }
 
-                    final List<String> mods = team.getEntries()
-                            .stream()
-                            .filter(i -> i.startsWith("mod-"))
-                            .map(i -> i.replace("mod-", ""))
-                            .toList();
+                            members.add(i.username);
+                        }
 
-                    player.sendMessage("Party Leader: %s".formatted(leader));
-                    player.sendMessage("Party Moderators: %s".formatted(String.join(", ", mods)));
-                    player.sendMessage("Party Members: %s".formatted(String.join(", ", members)));
+                        player.sendMessage("Party Leader: %s".formatted(leader));
+                        player.sendMessage("Party Moderators: %s".formatted(String.join(", ", moderators)));
+                        player.sendMessage("Party Members: %s".formatted(String.join(", ", members)));
+                    });
                 })
                 .register();
     }

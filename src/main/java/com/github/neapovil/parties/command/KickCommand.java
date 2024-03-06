@@ -1,11 +1,11 @@
 package com.github.neapovil.parties.command;
 
-import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Team;
+import java.util.Optional;
 
-import com.github.neapovil.parties.Parties;
-import com.github.neapovil.parties.util.Util;
-import com.github.neapovil.parties.util.Util.PartyRank;
+import org.bukkit.entity.Player;
+
+import com.github.neapovil.parties.resource.PartiesResource;
+import com.github.neapovil.parties.runnable.SaveRunnable;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -13,70 +13,66 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 
-public final class KickCommand implements ICommand
+public final class KickCommand extends AbstractCommand
 {
-    private final Parties plugin = Parties.instance();
-
     public void register()
     {
         new CommandAPICommand("party")
                 .withPermission("parties.command.kick")
                 .withArguments(new LiteralArgument("kick").withRequirement(sender -> {
-                    final PartyRank partyrank = Util.getRank((Player) sender);
-                    return partyrank.equals(PartyRank.LEADER) || partyrank.equals(PartyRank.MOD);
+                    final Player player = (Player) sender;
+                    final Optional<PartiesResource.Party.Member> optionalmember = plugin.findMember(player);
+                    return optionalmember.isPresent() && optionalmember.get().role.hasPermission("kick");
                 }))
                 .withArguments(new StringArgument("playerName").replaceSuggestions(ArgumentSuggestions.strings(info -> {
                     final Player player = (Player) info.sender();
-                    return Util.getMembers(player)
+                    return plugin.findParty(player).get().members
                             .stream()
+                            .filter(i -> !i.role.hasPermission("kick"))
+                            .map(i -> i.username)
                             .filter(i -> !i.equalsIgnoreCase(player.getName()))
                             .toArray(String[]::new);
                 })))
                 .executesPlayer((player, args) -> {
                     final String playername = (String) args.get("playerName");
 
-                    if (playername.equals(player.getName()))
+                    if (playername.equalsIgnoreCase(player.getName()))
                     {
-                        throw CommandAPI.failWithString("You can't kick yourself");
+                        return;
                     }
 
-                    final Team team = Util.getParty(player).get();
+                    plugin.findParty(player).ifPresent(party -> {
+                        party.findMember(playername).ifPresent(member -> {
+                            if (member.role.hasPermission("kick"))
+                            {
+                                player.sendRichMessage("<red>You can't kick this player");
+                                return;
+                            }
 
-                    if (!Util.getRank(player).equals(PartyRank.LEADER) && team.getEntries().contains("mod-" + playername))
-                    {
-                        throw CommandAPI.failWithString("Only the leader can kick a mod");
-                    }
+                            party.members.removeIf(i -> i.uuid.equals(member.uuid));
+                            party.team().removeEntry(playername);
 
-                    if (team.getEntries().contains("leader-" + playername))
-                    {
-                        throw CommandAPI.failWithString("You can't kick the leader");
-                    }
+                            final Player player1 = plugin.getServer().getPlayer(playername);
 
-                    if (!team.getEntries().contains(playername))
-                    {
-                        throw CommandAPI.failWithString("Player not found");
-                    }
+                            if (player1 != null)
+                            {
+                                player1.getPersistentDataContainer().remove(plugin.partyIdKey);
+                                player1.sendRichMessage("<red>You have been kicked from the party");
+                                CommandAPI.updateRequirements(player1);
+                            }
 
-                    team.removeEntry(playername);
-                    team.removeEntry("mod" + playername);
+                            party.onlineMembers().forEach(i -> {
+                                if (!i.getName().equals(player.getName()))
+                                {
+                                    i.sendRichMessage("<red>%s has been kicked from the party".formatted(playername));
+                                }
+                            });
 
-                    final Player player1 = plugin.getServer().getPlayer(playername);
+                            player.sendRichMessage("<red>You kicked %s from the party".formatted(playername));
 
-                    if (player1 != null)
-                    {
-                        player1.getPersistentDataContainer().remove(plugin.partyIdKey);
-                        player1.sendRichMessage("<red>You have been kicked from the party");
-                        CommandAPI.updateRequirements(player1);
-                    }
-
-                    Util.getOnlineMembers(player).forEach(i -> {
-                        if (!i.getName().equals(player.getName()))
-                        {
-                            i.sendMessage("<red>%s has been kicked from the party".formatted(playername));
-                        }
+                            new SaveRunnable().runTaskAsynchronously(plugin);
+                        });
                     });
-
-                    player.sendMessage("<red>You kicked %s from the party".formatted(playername));
                 })
                 .register();
     }
